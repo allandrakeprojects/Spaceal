@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data-set xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <record>
+    <Question>هل هذا سؤال؟</Question>
+    <Image></Image>
+	<Video></Video>
+    <Answers>
+      <Answer correct="true">نعم</Answer>
+      <Answer correct="false">لا</Answer>
+      <Answer correct="false">ربما</Answer>
+      <Answer correct="false">لا أعرف</Answer>
+    </Answers>
+    <Bonus>100</Bonus>
+    <Time>8</Time>
+  </record>
+  <record>
+    <Question>من هو أعظم رجل على قيد الحياة؟</Question>
+    <Image></Image>
+	<Video></Video>
+    <Answers>
+      <Answer correct="true">باتمان</Answer>
+      <Answer correct="false">سوبرمان</Answer>
+      <Answer correct="true">باتمان</Answer>
+      <Answer correct="true">باتمان</Answer>
+    </Answers>
+    <Bonus>100</Bonus>
+    <Time>8</Time>
+  </record>
+</data-set>
