@@ -507,6 +507,11 @@ namespace TriviaQuizGame
             StartCoroutine(AskQuestion(false));
         }
 
+        // adpd update
+        float seconds;
+        float minutes;
+        float hours;
+
         /// <summary>
         /// Update is called every frame, if the MonoBehaviour is enabled.
         /// </summary>
@@ -579,10 +584,22 @@ namespace TriviaQuizGame
                 }
 
                 // Update the timer
+                // adpd update
                 UpdateTime();
             }
             // Update the play sound time
             if (soundPlayTime > 0) soundPlayTime -= Time.deltaTime;
+        }
+
+        // adpd update
+        private string CheckOneDigit(string entry)
+        {
+            if (entry.Length == 1)
+            {
+                entry = "0" + entry;
+            }
+
+            return entry;
         }
 
         /// <summary>
@@ -1101,7 +1118,8 @@ namespace TriviaQuizGame
                         players[currentPlayer].lives--;
 
                         // Update the lives we have left
-                        Updatelives();
+                        // adpd update
+                        //Updatelives();
 
                         // Add to the stat wrong answer
                         wrongAnswers++;
@@ -1389,6 +1407,26 @@ namespace TriviaQuizGame
         /// </summary>
         void UpdateTime()
         {
+            // adpd update
+            seconds += Time.deltaTime;
+
+            if (seconds >= 60)
+            {
+                minutes += 1;
+                seconds = 0;
+            }
+
+            if (minutes >= 60)
+            {
+                hours += 1;
+                minutes = 0;
+            }
+
+            if (timerText)
+            {
+                timerText.text = CheckOneDigit(hours.ToString()) + ":" + CheckOneDigit(minutes.ToString()) + ":" + CheckOneDigit((int)seconds + "");
+            }
+
             // Update the time only if we have a timer object assigned
             if (timerIcon || timerAnimated)
             {
@@ -1396,30 +1434,32 @@ namespace TriviaQuizGame
                 if (timerIcon)
                 {
                     // Update the timer circle, if we have one
-                    if (timerBar)
-                    {
-                        // If we have a global time, display the timer progress for it.
-                        if (globalTime > 0)
-                        {
-                            timerBar.fillAmount = timeLeft / globalTime;
-                        }
-                        else if (timerRunning == true) // If the timer is running, display the fill amount left for the question time. 
-                        {
-                            timerBar.fillAmount = timeLeft / questions[currentQuestion].time;
-                        }
-                        else // Otherwise refill the amount back to 100%
-                        {
-                            timerBar.fillAmount = Mathf.Lerp(timerBar.fillAmount, 1, Time.deltaTime * 10);
-                        }
-                    }
+                    // adpd update
+                    //if (timerBar)
+                    //{
+                    //    If we have a global time, display the timer progress for it.
+                    //    if (globalTime > 0)
+                    //        {
+                    //            timerBar.fillAmount = timeLeft / globalTime;
+                    //        }
+                    //        else if (timerRunning == true) // If the timer is running, display the fill amount left for the question time. 
+                    //        {
+                    //            timerBar.fillAmount = timeLeft / questions[currentQuestion].time;
+                    //        }
+                    //        else // Otherwise refill the amount back to 100%
+                    //        {
+                    //            timerBar.fillAmount = Mathf.Lerp(timerBar.fillAmount, 1, Time.deltaTime * 10);
+                    //        }
+                    //}
 
                     // Update the timer text, if we have one
-                    if (timerText)
-                    {
-                        // If the timer is running, display the timer left. Otherwise hide the text
-                        if (timerRunning == true || globalTime > 0) timerText.text = Mathf.RoundToInt(timeLeft).ToString();
-                        else timerText.text = "";
-                    }
+                    // adpd update
+                    //if (timerText)
+                    //{
+                    //    // If the timer is running, display the timer left. Otherwise hide the text
+                    //    if (timerRunning == true || globalTime > 0) timerText.text = Mathf.RoundToInt(timeLeft).ToString();
+                    //    else timerText.text = "";
+                    //}
                 }
 
                 // Using the animated timer, which progresses the animation based on the timer we have left
@@ -1463,10 +1503,11 @@ namespace TriviaQuizGame
                     else
                     {
                         // Reduce from lives
-                        players[currentPlayer].lives--;
+                        //players[currentPlayer].lives--;
 
                         // Update the lives we have left
-                        Updatelives();
+                        // adpd update
+                        //Updatelives();
 
                         // THIS WAS REMOVED BECAUSE IT CAUSED THE GAME TO SKIP A PLAYER WHEN THE TIMER RUNS OUT IN HOTSEAT MODE
                         // If we have more than one player and we are playing in turns (hotseat), go to the next player turn
@@ -1477,21 +1518,21 @@ namespace TriviaQuizGame
                         //}
 
                         // Show the result of this question, which is wrong ( because we ran out of time, we lost the question )
-                        ShowResult(false);
+                        //ShowResult(false);
                     }
 
-                    // Play the timer icon animation
-                    if (timerIcon && timerIcon.GetComponent<Animation>()) timerIcon.GetComponent<Animation>().Play();
+                    //// Play the timer icon animation
+                    //if (timerIcon && timerIcon.GetComponent<Animation>()) timerIcon.GetComponent<Animation>().Play();
 
-                    // Play the animated timer's timeUp animation
-                    if (timerAnimated && timerAnimated.GetComponent<Animation>())
-                    {
-                        timerAnimated.Stop();
-                        timerAnimated.Play("TimerAnimatedTimeUp");
-                    }
+                    //// Play the animated timer's timeUp animation
+                    //if (timerAnimated && timerAnimated.GetComponent<Animation>())
+                    //{
+                    //    timerAnimated.Stop();
+                    //    timerAnimated.Play("TimerAnimatedTimeUp");
+                    //}
 
-                    //If there is a source and a sound, play it from the source
-                    if (soundSource && soundTimeUp) soundSource.GetComponent<AudioSource>().PlayOneShot(soundTimeUp);
+                    ////If there is a source and a sound, play it from the source
+                    //if (soundSource && soundTimeUp) soundSource.GetComponent<AudioSource>().PlayOneShot(soundTimeUp);
                 }
             }
         }
@@ -1721,15 +1762,16 @@ namespace TriviaQuizGame
         /// <summary>
         /// Updates the lives we have
         /// </summary>
-        public void Updatelives()
-        {
-            // Update lives only if we have a lives bar assigned
-            if (players[currentPlayer].livesBar)
-            {
-                // If we run out of lives, it's game over
-                if (players[currentPlayer].lives <= 0) StartCoroutine(GameOver(1));
-            }
-        }
+        // adpd update
+        //public void Updatelives()
+        //{
+        //    // Update lives only if we have a lives bar assigned
+        //    if (players[currentPlayer].livesBar)
+        //    {
+        //        // If we run out of lives, it's game over
+        //        if (players[currentPlayer].lives <= 0) StartCoroutine(GameOver(1));
+        //    }
+        //}
 
         /// <summary>
         /// Shows the larger image from the thumbnail in the question image
@@ -1848,7 +1890,8 @@ namespace TriviaQuizGame
                     players[currentPlayer].lives = lives;
 
                     // Update the lives
-                    Updatelives();
+                    // adpd update
+                    //Updatelives();
 
                     // Set the name of each player at the start of the game
                     if (players[currentPlayer].nameText) players[currentPlayer].nameText.GetComponent<Text>().text = players[currentPlayer].name.ToString();
@@ -2314,7 +2357,8 @@ namespace TriviaQuizGame
             players[currentPlayer].lives++;
 
             // Update the lives we have left
-            Updatelives();
+            // adpd update
+            //Updatelives();
 
             // The game is not over anymore
             isGameOver = false;
