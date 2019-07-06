@@ -1044,7 +1044,17 @@ namespace TriviaQuizGame
                         //questionObject.gameObject.SetActive(false);
 
                         //If we have no more questions, we win the game!
-                        StartCoroutine(Victory(0));
+                        // adpd update
+                        if ((players[currentPlayer].score >= 4 && currentCategory.ToString().ToLower().Contains("level 1")) ||
+                            (players[currentPlayer].score >= 8 && currentCategory.ToString().ToLower().Contains("level 2")) ||
+                            (players[currentPlayer].score >= 14 && currentCategory.ToString().ToLower().Contains("level 3")))
+                        {
+                            StartCoroutine(Victory(0));
+                        }
+                        else
+                        {
+                            StartCoroutine(GameOver(0));
+                        }
                     }
 
                     // If we have a question limit, count towards it to win
@@ -1059,7 +1069,20 @@ namespace TriviaQuizGame
                         }
 
                         // If we reach the question limit, win the game
-                        if (questionLimitCount > questionLimit) StartCoroutine(Victory(0));
+                        if (questionLimitCount <= questionLimit)
+                        {
+                            // adpd update
+                            if ((players[currentPlayer].score >= 4 && currentCategory.ToString().ToLower().Contains("level 1")) ||
+                                (players[currentPlayer].score >= 8 && currentCategory.ToString().ToLower().Contains("level 2")) ||
+                                (players[currentPlayer].score >= 14 && currentCategory.ToString().ToLower().Contains("level 3")))
+                            {
+                                StartCoroutine(Victory(0));
+                            }
+                        }
+                        else
+                        {
+                            StartCoroutine(GameOver(0));
+                        }
                     }
                 }
                 else
@@ -1542,7 +1565,7 @@ namespace TriviaQuizGame
                 //    // If we have a global time and the timer ran out, just go straight to the GameOver screen
                 //    if (globalTime > 0)
                 //    {
-                //        StartCoroutine(GameOver(1));
+                //        StartCoroutine(GameOver(0));
                 //    }
                 //    else
                 //    {
@@ -1618,10 +1641,10 @@ namespace TriviaQuizGame
 
             //Update the score text for the current player
             if (players[currentPlayer].scoreText) players[currentPlayer].scoreText.GetComponent<Text>().text = "Score: " + players[currentPlayer].score.ToString();
-            Debug.Log(players[currentPlayer].score.ToString());
 
             // If we reach the victory score we win the game
-            if (scoreToVictory > 0 && players[currentPlayer].score >= scoreToVictory) StartCoroutine(Victory(0));
+            // adpd update
+            //if (scoreToVictory > 0 && players[currentPlayer].score >= scoreToVictory) StartCoroutine(Victory(0));
         }
 
         /// <summary>
@@ -1643,7 +1666,7 @@ namespace TriviaQuizGame
                 gameOverCanvas.gameObject.SetActive(true);
 
                 //Write the score text, if it exists
-                if (gameOverCanvas.Find("ScoreTexts/TextScore")) gameOverCanvas.Find("ScoreTexts/TextScore").GetComponent<Text>().text += " " + players[currentPlayer].score.ToString();
+                if (gameOverCanvas.Find("ScoreTexts/TextScore")) gameOverCanvas.Find("ScoreTexts/TextScore").GetComponent<Text>().text += "YOUR SCORE IS \n" + players[currentPlayer].score.ToString() + " of " + questionLimit;
 
                 //Check if we got a high score
                 if (players[currentPlayer].score > highScore)
@@ -1659,7 +1682,20 @@ namespace TriviaQuizGame
                 }
 
                 //Write the high sscore text
-                gameOverCanvas.Find("ScoreTexts/TextHighScore").GetComponent<Text>().text += " " + highScore.ToString();
+                int passingScore = 0;
+                if (questionLimit == 5)
+                {
+                    passingScore = 4;
+                }
+                else if (questionLimit == 10)
+                {
+                    passingScore = 8;
+                }
+                else if (questionLimit == 15)
+                {
+                    passingScore = 14;
+                }
+                gameOverCanvas.Find("ScoreTexts/TextHighScore").GetComponent<Text>().text += "Passing score is " + passingScore;
 
                 //If there is a source and a sound, play it from the source
                 if (soundSource && soundGameOver) soundSource.GetComponent<AudioSource>().PlayOneShot(soundGameOver);
@@ -1698,8 +1734,15 @@ namespace TriviaQuizGame
                 // If we have a TextScore and TextHighScore objects, then we are using the single player victory canvas
                 if (victoryCanvas.Find("ScoreTexts/TextScore") && victoryCanvas.Find("ScoreTexts/TextHighScore"))
                 {
+                    if ((questionLimit == 5 && players[currentPlayer].score == 5) ||
+                        (questionLimit == 10 && players[currentPlayer].score == 10) ||
+                        (questionLimit == 15 && players[currentPlayer].score == 15))
+                    {
+                        victoryCanvas.Find("TextTitle").GetComponent<Text>().text = "PERFECT!";
+                    }
+
                     //Write the score text, if it exists
-                    victoryCanvas.Find("ScoreTexts/TextScore").GetComponent<Text>().text += " " + players[currentPlayer].score.ToString();
+                    victoryCanvas.Find("ScoreTexts/TextScore").GetComponent<Text>().text += "YOUR SCORE IS \n" + players[currentPlayer].score.ToString() + " of " + questionLimit;
 
                     //Check if we got a high score
                     if (players[currentPlayer].score > highScore)
@@ -1841,7 +1884,7 @@ namespace TriviaQuizGame
         //    if (players[currentPlayer].livesBar)
         //    {
         //        // If we run out of lives, it's game over
-        //        if (players[currentPlayer].lives <= 0) StartCoroutine(GameOver(1));
+        //        if (players[currentPlayer].lives <= 0) StartCoroutine(GameOver(0));
         //    }
         //}
 
