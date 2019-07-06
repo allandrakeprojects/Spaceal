@@ -137,6 +137,7 @@ namespace TriviaQuizGame
 		/// </summary>
 		public void SetCategory( int setValue )
 		{
+            Debug.Log("dasdasdsd");
 			// If we have a category grid
 			if ( categoryGridObject ) 
 			{
