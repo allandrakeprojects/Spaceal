@@ -399,7 +399,29 @@ namespace TriviaQuizGame
             questionCount = 0;
 
             // Make sure the question limit isn't larger than the actual number of questions available
-            questionLimit = Mathf.Clamp(questionLimit, 0, questions.Length);
+
+            // adpd update
+            if (currentCategory.ToLower().Contains("level 1"))
+            {
+                questionLimit = 5;
+            }
+            else if (currentCategory.ToLower().Contains("level 2"))
+            {
+                questionLimit = 10;
+            }
+            else if (currentCategory.ToLower().Contains("level 3"))
+            {
+                questionLimit = 15;
+            }
+            else
+            {
+                questionLimit = 5;
+            }
+
+            Debug.Log("Current Category: " + currentCategory + "\n" +
+                      "Question Limit: " + questionLimit);
+
+            GameObject.Find("QuestionsCount").GetComponent<Text>().text = "1 of " + questionLimit + "\nQuestions";
 
             // Assign the progress object and all related objects for easier access
             if (GameObject.Find("ProgressObject"))
@@ -481,8 +503,6 @@ namespace TriviaQuizGame
 
                 // Wait some time before checking if the XML was loaded
                 yield return new WaitForSeconds(dynamicXML.xmlLoadTimeout);
-
-
             }
 
             // Go through all the questions and overwrite their followup text values with the quiz-wide values, if they exist
@@ -591,8 +611,6 @@ namespace TriviaQuizGame
         /// </summary>
         void SetQuestionList()
         {
-            // asd
-            Debug.Log("SetQuestionList");
             // Shuffle all the available questions
             if (randomizeQuestions == true) questions = ShuffleQuestions(questions);
 
@@ -614,8 +632,6 @@ namespace TriviaQuizGame
         /// <param name="questions">A list of questions</param>
         Question[] ShuffleQuestions(Question[] questions)
         {
-            // asd
-            Debug.Log("ShuffleQuestions");
             // Go through all the questions and shuffle them
             for (index = 0; index < questions.Length; index++)
             {
@@ -641,8 +657,6 @@ namespace TriviaQuizGame
         /// <param name="answers">A list of answers</param>
         Answer[] ShuffleAnswers(Answer[] answers)
         {
-            // asd
-            Debug.Log("ShuffleAnswers");
             // Go through all the answers and shuffle them
             for (index = 0; index < answers.Length; index++)
             {
@@ -671,6 +685,16 @@ namespace TriviaQuizGame
         {
             if (isGameOver == false)
             {
+                // asd
+                //Debug.Log(questions.Length);
+                //Debug.Log(questions[0].question);
+                //Debug.Log(questions[1].question);
+                //Debug.Log(questions[2].question);
+                //Debug.Log(questions[3].question);
+                //Debug.Log(questions[4].question);
+                //Debug.Log(questions[5].question);
+                //Debug.Log(questions[6].question);
+
                 // This boolean is used to check if we already asked this question, and then ask another instead
                 bool questionIsUsed = false;
 
@@ -680,6 +704,7 @@ namespace TriviaQuizGame
                 // If we asked enough questions, move on to the next bonus group
                 if (questionCount >= questionsPerGroup)
                 {
+                    //Debug.Log(questions.Length);
                     // Holding the current bonus to compare to the next bonus
                     float tempBonus = questions[currentQuestion].bonus;
 
@@ -716,6 +741,13 @@ namespace TriviaQuizGame
                 {
                     // Go to the next question
                     currentQuestion++;
+
+                    // adpd update
+                    int currentQuestionText = currentQuestion+1;
+                    if (currentQuestionText <= questionLimit)
+                    {
+                        GameObject.Find("QuestionsCount").GetComponent<Text>().text = currentQuestionText + " of " + questionLimit + "\nQuestions";
+                    }
 
                     // If we got to the last question in the quiz, check if there are unused questions we can put in the quiz again
                     if (dontRepeatQuestions == true && currentQuestion >= questions.Length)
@@ -1454,7 +1486,7 @@ namespace TriviaQuizGame
                         // If the timer is running, display the timer left. Otherwise hide the text
                         if (timerRunning == true || globalTime > 0)
                         {
-                            timerText.text = CheckOneDigit(hours.ToString()) + ":" + CheckOneDigit(minutes.ToString()) + ":" + CheckOneDigit((int)seconds + "");
+                            timerText.text = CheckOneDigit(hours.ToString(), "h") + CheckOneDigit(minutes.ToString(), "m") + ":" + CheckOneDigit((int)seconds + "", "s");
                         }
                         else
                         {
@@ -1543,11 +1575,28 @@ namespace TriviaQuizGame
         }
 
         // adpd update
-        private string CheckOneDigit(string entry)
+        private string CheckOneDigit(string entry, string type)
         {
-            if (entry.Length == 1)
+            if (type == "h")
             {
-                entry = "0" + entry;
+                if (entry == "0")
+                {
+                    entry = "";
+                }
+                else
+                {
+                    if (entry.Length == 1)
+                    {
+                        entry = "0" + entry + ":";
+                    }
+                }
+            }
+            else
+            {
+                if (entry.Length == 1)
+                {
+                    entry = "0" + entry;
+                }
             }
 
             return entry;
@@ -2267,9 +2316,6 @@ namespace TriviaQuizGame
         public void SetCategoryName(string setValue)
         {
             currentCategory = setValue;
-
-            // asd
-            Debug.Log(currentCategory);
         }
 
         /// <summary>

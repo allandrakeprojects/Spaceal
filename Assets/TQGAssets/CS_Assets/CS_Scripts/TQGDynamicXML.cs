@@ -59,6 +59,7 @@ namespace TriviaQuizGame.Types
 		/// </summary>
 		void Awake()
 		{
+            Debug.Log("wake");
 			gameController = (TQGGameController) FindObjectOfType(typeof(TQGGameController));
 
 			category = GetComponent<Category>();
@@ -78,7 +79,7 @@ namespace TriviaQuizGame.Types
 				WWW address = new WWW(xmlAddress);
 
 				// If the address is local ( on the computer ), apply the correct "file:///" prefix
-				if ( addressType == "Local" )    address = new WWW("file:///" + xmlAddress);
+				if ( addressType == "Local" ) address = new WWW("file:///" + xmlAddress);
 
 				// Wait until it has been loaded
 				yield return address;

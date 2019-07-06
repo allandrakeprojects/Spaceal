@@ -23,7 +23,7 @@ namespace TriviaQuizGame
 		public int startingCategories = 3;
 
 		[Tooltip("The message that appears when the current category is locked")]
-		public string lockedMessage = "Must complete previous category";
+		public string lockedMessage = "Must";
 
 		[Tooltip("The color of a category that is locked")]
 		public Color lockedColor = Color.gray;
@@ -109,8 +109,9 @@ namespace TriviaQuizGame
 					}
 					else
 					{
-						// Display the locked message instead of the category name
-						newCategory.Find("Text").GetComponent<Text>().text = lockedMessage;
+                        // Display the locked message instead of the category name
+                        int category_index = index + 1;
+                        newCategory.Find("Text").GetComponent<Text>().text = "Level " + category_index + " is locked";
 
 						// Display the locked color instead of the category color
 						newCategory.GetComponent<Image>().color = lockedColor;
@@ -137,7 +138,6 @@ namespace TriviaQuizGame
 		/// </summary>
 		public void SetCategory( int setValue )
 		{
-            Debug.Log("dasdasdsd");
 			// If we have a category grid
 			if ( categoryGridObject ) 
 			{
