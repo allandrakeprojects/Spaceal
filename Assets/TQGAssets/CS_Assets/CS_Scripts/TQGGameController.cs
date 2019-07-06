@@ -309,6 +309,9 @@ namespace TriviaQuizGame
             // Clear the bonus object text
             if (bonusObject) bonusObject.Find("Text").GetComponent<Text>().text = "";
 
+            // adpd update
+            GameObject.Find("QuestionsCount").GetComponent<Text>().text = "";
+
             // Clear the question text
             questionObject.Find("Text").GetComponent<Text>().text = "";
 
@@ -1024,7 +1027,8 @@ namespace TriviaQuizGame
                             bonusObject.GetComponent<Animation>()[bonusObject.GetComponent<Animation>().clip.name].speed = -1;
 
                             // Display the bonus text
-                            bonusObject.Find("Text").GetComponent<Text>().text = bonus.ToString();
+                            // adpd update
+                            bonusObject.Find("Text").GetComponent<Text>().text = "+100";
                         }
 
                         // If keyboard controls are on, highlight the first answer. Otherwise, deselect all answers
@@ -1121,7 +1125,8 @@ namespace TriviaQuizGame
                     timeLeft -= timeLoss;
 
                     // Display the bonus text
-                    if (bonusObject) bonusObject.Find("Text").GetComponent<Text>().text = bonus.ToString();
+                    // adpd update
+                    if (bonusObject) bonusObject.Find("Text").GetComponent<Text>().text = "+100";
 
                     // Increase the mistake count
                     mistakeCount++;
@@ -1133,7 +1138,8 @@ namespace TriviaQuizGame
                         bonus = 0;
 
                         // Display the bonus text
-                        if (bonusObject) bonusObject.Find("Text").GetComponent<Text>().text = bonus.ToString();
+                        // adpd update
+                        if (bonusObject) bonusObject.Find("Text").GetComponent<Text>().text = "+100";
 
                         // Reduce from lives
                         players[currentPlayer].lives--;
@@ -1612,6 +1618,7 @@ namespace TriviaQuizGame
 
             //Update the score text for the current player
             if (players[currentPlayer].scoreText) players[currentPlayer].scoreText.GetComponent<Text>().text = players[currentPlayer].score.ToString();
+            Debug.Log(players[currentPlayer].score.ToString());
 
             // If we reach the victory score we win the game
             if (scoreToVictory > 0 && players[currentPlayer].score >= scoreToVictory) StartCoroutine(Victory(0));
