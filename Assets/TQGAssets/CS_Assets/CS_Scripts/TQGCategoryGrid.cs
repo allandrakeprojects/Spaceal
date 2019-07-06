@@ -47,8 +47,8 @@ namespace TriviaQuizGame
 		/// This allows you to order initialization of scripts
 		/// </summary>
 		void Start()
-		{
-			thisTransform = transform;
+        {
+            thisTransform = transform;
 			
 			// Hold the gamecontroller for easier access
 			if ( GameObject.FindGameObjectWithTag("GameController") )    gameController = GameObject.FindGameObjectWithTag("GameController");
