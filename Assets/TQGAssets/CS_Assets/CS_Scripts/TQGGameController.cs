@@ -1681,6 +1681,13 @@ namespace TriviaQuizGame
 #endif
                 }
 
+                if ((questionLimit == 5 && players[currentPlayer].score == 3) ||
+                    (questionLimit == 10 && players[currentPlayer].score == 7) ||
+                    (questionLimit == 15 && players[currentPlayer].score == 13))
+                {
+                    gameOverCanvas.Find("TextTitle").GetComponent<Text>().text = "YOU CAN DO IT!";
+                }
+
                 //Write the high sscore text
                 int passingScore = 0;
                 if (questionLimit == 5)
