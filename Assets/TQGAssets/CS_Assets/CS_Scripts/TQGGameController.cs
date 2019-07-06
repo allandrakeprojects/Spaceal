@@ -1049,6 +1049,7 @@ namespace TriviaQuizGame
                             (players[currentPlayer].score >= 8 && currentCategory.ToString().ToLower().Contains("level 2")) ||
                             (players[currentPlayer].score >= 14 && currentCategory.ToString().ToLower().Contains("level 3")))
                         {
+                            Debug.Log("0");
                             StartCoroutine(Victory(0));
                         }
                         else
@@ -1069,7 +1070,7 @@ namespace TriviaQuizGame
                         }
 
                         // If we reach the question limit, win the game
-                        if (questionLimitCount <= questionLimit)
+                        if (questionLimitCount > questionLimit)
                         {
                             // adpd update
                             if ((players[currentPlayer].score >= 4 && currentCategory.ToString().ToLower().Contains("level 1")) ||
@@ -1078,10 +1079,10 @@ namespace TriviaQuizGame
                             {
                                 StartCoroutine(Victory(0));
                             }
-                        }
-                        else
-                        {
-                            StartCoroutine(GameOver(0));
+                            else
+                            {
+                                StartCoroutine(GameOver(0));
+                            }
                         }
                     }
                 }
