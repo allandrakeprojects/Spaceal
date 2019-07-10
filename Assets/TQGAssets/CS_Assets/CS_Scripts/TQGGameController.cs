@@ -1047,7 +1047,10 @@ namespace TriviaQuizGame
                             String[] questionTitleArray = questionTitle.ToString().Replace("Drag the answer to complete the question.", "").Split(new string[] { "||" }, StringSplitOptions.None);
                             questionRemove = questionTitle.ToString().Replace("Drag the answer to complete the question.", "");
                             questionObject.Find("Text").GetComponent<Text>().text = questionTitle.Replace(questionRemove, "");
-                            Debug.Log(questionTitleArray[0]);
+                            questionObject.Find("DragAndDropObject/ButtonAnswer00").GetComponentInChildren<Text>().text = questionTitleArray[0];
+                            questionObject.Find("DragAndDropObject/ButtonAnswer11").GetComponentInChildren<Text>().text = questionTitleArray[1];
+                            questionObject.Find("DragAndDropObject/ButtonAnswer22").GetComponentInChildren<Text>().text = questionTitleArray[2];
+                            questionObject.Find("DragAndDropObject/ButtonAnswer33").GetComponentInChildren<Text>().text = questionTitleArray[3];
                         }
 
                         // If we started a new bonus group, reset the question counter
