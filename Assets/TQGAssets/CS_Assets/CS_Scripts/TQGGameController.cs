@@ -406,7 +406,7 @@ namespace TriviaQuizGame
             // adpd update
             if (currentCategory.ToLower().Contains("level 1"))
             {
-                questionLimit = 5;
+                questionLimit = 10;
             }
             else if (currentCategory.ToLower().Contains("level 2"))
             {
@@ -414,7 +414,7 @@ namespace TriviaQuizGame
             }
             else if (currentCategory.ToLower().Contains("level 3"))
             {
-                questionLimit = 15;
+                questionLimit = 20;
             }
             else
             {
@@ -688,15 +688,6 @@ namespace TriviaQuizGame
         {
             if (isGameOver == false)
             {
-                // asd
-                //Debug.Log(questions.Length);
-                //Debug.Log(questions[0].question);
-                //Debug.Log(questions[1].question);
-                //Debug.Log(questions[2].question);
-                //Debug.Log(questions[3].question);
-                //Debug.Log(questions[4].question);
-                //Debug.Log(questions[5].question);
-                //Debug.Log(questions[6].question);
 
                 // This boolean is used to check if we already asked this question, and then ask another instead
                 bool questionIsUsed = false;
@@ -724,6 +715,16 @@ namespace TriviaQuizGame
                         if (dontRepeatQuestions == true && PlayerPrefs.HasKey(questions[currentQuestion].question)) questionIsUsed = true;
                     }
 
+                    // adpd update
+                    if (questions[currentQuestion].question.ToString().Contains("Drag"))
+                    {
+                        questionObject.Find("DragAndDragObject").gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        questionObject.Find("DragAndDragObject").gameObject.SetActive(false);
+                    }
+
                     // Animate the question
                     if (animationQuestion)
                     {
@@ -744,6 +745,16 @@ namespace TriviaQuizGame
                 {
                     // Go to the next question
                     currentQuestion++;
+
+                    // adpd update
+                    if (questions[currentQuestion].question.ToString().Contains("Drag"))
+                    {
+                        questionObject.Find("DragAndDragObject").gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        questionObject.Find("DragAndDragObject").gameObject.SetActive(false);
+                    }
 
                     // adpd update
                     int currentQuestionText = currentQuestion+1;
@@ -1010,6 +1021,12 @@ namespace TriviaQuizGame
                                 //questions[currentQuestion].video.Play();
                             }
 #endif
+                        }
+
+                        // adpd update
+                        if (questions[currentQuestion].answers.Length == 3)
+                        {
+                            answerObjects[3].gameObject.SetActive(false);
                         }
 
                         // If we started a new bonus group, reset the question counter
