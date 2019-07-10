@@ -13,6 +13,7 @@ using System.Text;
 using System.Xml;
 using System.IO;
 using TriviaQuizGame.Types;
+using System.Collections.Generic;
 
 namespace TriviaQuizGame
 {
@@ -1047,10 +1048,22 @@ namespace TriviaQuizGame
                             String[] questionTitleArray = questionTitle.ToString().Replace("Drag the answer to complete the question.", "").Split(new string[] { "||" }, StringSplitOptions.None);
                             questionRemove = questionTitle.ToString().Replace("Drag the answer to complete the question.", "");
                             questionObject.Find("Text").GetComponent<Text>().text = questionTitle.Replace(questionRemove, "");
-                            questionObject.Find("DragAndDropObject/ButtonAnswer00").GetComponentInChildren<Text>().text = questionTitleArray[0];
-                            questionObject.Find("DragAndDropObject/ButtonAnswer11").GetComponentInChildren<Text>().text = questionTitleArray[1];
-                            questionObject.Find("DragAndDropObject/ButtonAnswer22").GetComponentInChildren<Text>().text = questionTitleArray[2];
-                            questionObject.Find("DragAndDropObject/ButtonAnswer33").GetComponentInChildren<Text>().text = questionTitleArray[3];
+
+                            List<int> randomNumbers = new List<int>();
+                            int count = 0;
+                            for (int i = 0; i < 4; i++)
+                            {
+                                int number;
+
+                                do number = rand.Next(0, 4);
+                                while (randomNumbers.Contains(number));
+
+                                randomNumbers.Add(number);
+
+                                questionObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = questionTitleArray[count];
+
+                                count++;
+                            }
                         }
 
                         // If we started a new bonus group, reset the question counter
@@ -1135,7 +1148,7 @@ namespace TriviaQuizGame
 
             }
         }
-
+        private System.Random rand = new System.Random();
         /// <summary>
         /// Chooses an answer from the list by index
         /// </summary>
