@@ -955,7 +955,17 @@ namespace TriviaQuizGame
                             }
 
                             // Enable the button so we can press it
-                            answerObjects[index].GetComponent<Button>().interactable = true;
+                            // asdasdasdasd
+                            // adpd update
+                            if (questions[currentQuestion].question.ToString().Contains("Drag"))
+                            {
+                                answerObjects[index].GetComponent<Button>().enabled = false;
+                            }
+                            else
+                            {
+                                answerObjects[index].GetComponent<Button>().enabled = true;
+                                answerObjects[index].GetComponent<Button>().interactable = true;
+                            }
 
                             // Select each button as it becomes enabled. This action solves a bug that appeared in Unity 5.5 where buttons stay highlighted from the previous question.
                             answerObjects[index].GetComponent<Button>().Select();
