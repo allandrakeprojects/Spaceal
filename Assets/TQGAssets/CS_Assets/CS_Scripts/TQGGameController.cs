@@ -718,11 +718,11 @@ namespace TriviaQuizGame
                     if (questions[currentQuestion].question.ToString().Contains("Drag"))
                     {
                         // asdasdasd
-                        questionObject.Find("DragAndDragObject").gameObject.SetActive(true);
+                        questionObject.Find("DragAndDropObject").gameObject.SetActive(true);
                     }
                     else
                     {
-                        questionObject.Find("DragAndDragObject").gameObject.SetActive(false);
+                        questionObject.Find("DragAndDropObject").gameObject.SetActive(false);
                     }
 
                     // Animate the question
@@ -750,13 +750,13 @@ namespace TriviaQuizGame
                     if (questions[currentQuestion].question.ToString().Contains("Drag"))
                     {
                         // asdasdasd
-                        questionObject.Find("DragAndDragObject").gameObject.SetActive(true);
+                        questionObject.Find("DragAndDropObject").gameObject.SetActive(true);
                     }
                     else
                     {
-                        questionObject.Find("DragAndDragObject").gameObject.SetActive(false);
+                        questionObject.Find("DragAndDropObject").gameObject.SetActive(false);
                     }
-
+                    
                     // adpd update
                     int currentQuestionText = currentQuestion+1;
                     if (currentQuestionText <= questionLimit)
@@ -802,8 +802,9 @@ namespace TriviaQuizGame
                     // If we still have questions in the list, ask the next question
                     if (currentQuestion < questions.Length)
                     {
+                        questionObject.Find("ButtonAnswer00").GetComponent<Text>().text = "asdaasdas";
                         // Display the current question
-                        questionObject.Find("Text").GetComponent<Text>().text = questions[currentQuestion].question;
+                        //questionObject.Find("Text").GetComponent<Text>().text = "dasds";
 
                         // Record this question in PlayerPrefs so that we know it has been asked
                         PlayerPrefs.SetInt(questions[currentQuestion].question, 1);
@@ -955,7 +956,6 @@ namespace TriviaQuizGame
                             }
 
                             // Enable the button so we can press it
-                            // asdasdasdasd
                             // adpd update
                             if (questions[currentQuestion].question.ToString().Contains("Drag"))
                             {
@@ -973,8 +973,6 @@ namespace TriviaQuizGame
                             // Display the text of the answer
                             if (index < questions[currentQuestion].answers.Length) answerObjects[index].Find("Text").GetComponent<Text>().text = questions[currentQuestion].answers[index].answer;
                             else answerObjects[index].gameObject.SetActive(false);
-
-                            Debug.Log(questions[currentQuestion].answers[index].answer);
 
                             // If the answer has a sound, activate the sound button so we can play it
                             if (answerObjects[index].Find("ButtonPlaySound"))
@@ -1040,6 +1038,17 @@ namespace TriviaQuizGame
                         if (questions[currentQuestion].answers.Length == 3)
                         {
                             answerObjects[3].gameObject.SetActive(false);
+                        }
+
+                        // asdas123123
+                        if (questions[currentQuestion].question.ToString().Contains("Drag"))
+                        {
+                            //string questionTitle = questionObject.Find("Text").GetComponent<Text>().text;
+                            //string questionRemove = "";
+                            //String[] questionTitleArray = questionTitle.ToString().Replace("Drag the answer to complete the question.", "").Split(new string[] { "||" }, StringSplitOptions.None);
+                            //questionRemove = questionTitle.ToString().Replace("Drag the answer to complete the question.", "");
+                            //questionObject.Find("Text").GetComponent<Text>().text = questionTitle.Replace(questionRemove, "");
+                            //Debug.Log(questionTitleArray[0]);
                         }
 
                         // If we started a new bonus group, reset the question counter
