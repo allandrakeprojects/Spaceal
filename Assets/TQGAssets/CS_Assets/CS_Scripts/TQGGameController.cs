@@ -688,7 +688,6 @@ namespace TriviaQuizGame
         {
             if (isGameOver == false)
             {
-
                 // This boolean is used to check if we already asked this question, and then ask another instead
                 bool questionIsUsed = false;
 
@@ -718,6 +717,7 @@ namespace TriviaQuizGame
                     // adpd update
                     if (questions[currentQuestion].question.ToString().Contains("Drag"))
                     {
+                        // asdasdasd
                         questionObject.Find("DragAndDragObject").gameObject.SetActive(true);
                     }
                     else
@@ -749,6 +749,7 @@ namespace TriviaQuizGame
                     // adpd update
                     if (questions[currentQuestion].question.ToString().Contains("Drag"))
                     {
+                        // asdasdasd
                         questionObject.Find("DragAndDragObject").gameObject.SetActive(true);
                     }
                     else
@@ -962,6 +963,8 @@ namespace TriviaQuizGame
                             // Display the text of the answer
                             if (index < questions[currentQuestion].answers.Length) answerObjects[index].Find("Text").GetComponent<Text>().text = questions[currentQuestion].answers[index].answer;
                             else answerObjects[index].gameObject.SetActive(false);
+
+                            Debug.Log(questions[currentQuestion].answers[index].answer);
 
                             // If the answer has a sound, activate the sound button so we can play it
                             if (answerObjects[index].Find("ButtonPlaySound"))
