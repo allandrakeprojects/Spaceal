@@ -1060,7 +1060,7 @@ namespace TriviaQuizGame
 
                                 randomNumbers.Add(number);
 
-                                questionObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = questionTitleArray[count];
+                                questionObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = questionTitleArray[count].Trim();
 
                                 count++;
                             }

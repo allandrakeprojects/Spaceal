@@ -29,7 +29,7 @@ public class Inventory : MonoBehaviour, IHasChanged
             }
         }
 
-        inventoryText.text = builder.ToString();
+        //inventoryText.text = builder.ToString();
     }
 }
 
