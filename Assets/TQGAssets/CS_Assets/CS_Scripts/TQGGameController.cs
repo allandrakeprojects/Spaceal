@@ -687,6 +687,8 @@ namespace TriviaQuizGame
         /// </summary>
         IEnumerator AskQuestion(bool animateQuestion)
         {
+            PlayerPrefs.SetInt("Question Answer Count", 4);
+
             if (isGameOver == false)
             {
                 // This boolean is used to check if we already asked this question, and then ask another instead
