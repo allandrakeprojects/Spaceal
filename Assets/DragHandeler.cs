@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class DragHandeler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -11,6 +12,9 @@ public class DragHandeler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        PlayerPrefs.SetString("OnBeginDrag", gameObject.GetComponentInChildren<Text>().text);
+        PlayerPrefs.Save();
+
         itemBeingDragged = gameObject;
         startPosition = transform.position;
         startParent = transform.parent;

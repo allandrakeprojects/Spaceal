@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -15,6 +17,7 @@ public class Slots : MonoBehaviour, IDropHandler
 
             if (transform.childCount > 0)
             {
+                //Debug.Log(gameObject.name.ToString().ToLower() + " " + gameObject.GetComponentInChildren<Text>().text);
                 //if (gameObject.name.ToString().ToLower().Contains("buttonanswer"))
                 //{
                 //    if (gameObject.GetComponentInChildren<Text>().text == "L / - / N")
@@ -74,8 +77,27 @@ public class Slots : MonoBehaviour, IDropHandler
     {
         if (!item)
         {
+            // Drag and Drop Correct or Wrong
+            string answer = gameObject.GetComponentInChildren<Text>().text + " --- " + PlayerPrefs.GetString("OnBeginDrag");
+            ReadString(answer.Trim());
             DragHandeler.itemBeingDragged.transform.SetParent(transform);
             ExecuteEvents.ExecuteHierarchy<IHasChanged>(gameObject, null, (x, y) => x.HasChanged());
         }
+    }
+
+    [MenuItem("Tools/Read file")]
+    static void ReadString(string answer)
+    {
+        string path = "Assets/TQGAssets/Resources/ELDragAndDrop.txt";
+        StreamReader reader = new StreamReader(path);
+        if (reader.ReadToEnd().ToString().Contains(answer))
+        {
+            Debug.Log("correct");
+        }
+        else
+        {
+            Debug.Log("wrong");
+        }
+        reader.Close();
     }
 }

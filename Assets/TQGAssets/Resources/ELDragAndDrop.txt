@@ -1,0 +1,10 @@
+- / B / C --- A
+- / E / F --- D
+L / - / N --- M
+V / - / X --- W
+
+serves food in restaurant. --- A waiter
+fixes water pipes. --- A plumber
+puts out fire. --- A firefigther
+provides education to students. --- A teacher
+

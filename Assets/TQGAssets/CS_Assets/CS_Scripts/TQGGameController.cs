@@ -687,8 +687,6 @@ namespace TriviaQuizGame
         /// </summary>
         IEnumerator AskQuestion(bool animateQuestion)
         {
-            PlayerPrefs.SetInt("Question Answer Count", 4);
-
             if (isGameOver == false)
             {
                 // This boolean is used to check if we already asked this question, and then ask another instead
@@ -1062,6 +1060,7 @@ namespace TriviaQuizGame
 
                                 randomNumbers.Add(number);
 
+                                //questionObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = questionTitleArray[count].Trim();
                                 questionObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = questionTitleArray[count].Trim();
 
                                 count++;
