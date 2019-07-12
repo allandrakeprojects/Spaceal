@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -79,25 +80,36 @@ public class Slots : MonoBehaviour, IDropHandler
         {
             // Drag and Drop Correct or Wrong
             string answer = gameObject.GetComponentInChildren<Text>().text + " --- " + PlayerPrefs.GetString("OnBeginDrag");
-            ReadString(answer.Trim());
+            ReadString(answer.Trim(), gameObject.name);
             DragHandeler.itemBeingDragged.transform.SetParent(transform);
             ExecuteEvents.ExecuteHierarchy<IHasChanged>(gameObject, null, (x, y) => x.HasChanged());
         }
     }
 
     [MenuItem("Tools/Read file")]
-    static void ReadString(string answer)
+    static void ReadString(string answer, string index)
     {
         string path = "Assets/TQGAssets/Resources/ELDragAndDrop.txt";
         StreamReader reader = new StreamReader(path);
         if (reader.ReadToEnd().ToString().Contains(answer))
         {
-            Debug.Log("correct");
+            Sprite myFruit = Resources.Load("New Folder/Buttons/correct", typeof(Sprite)) as Sprite;
+            GameObject.Find("DragAndDropObject/ButtonAnswer" + index).GetComponent<Image>().sprite = myFruit;
         }
         else
         {
-            Debug.Log("wrong");
+            Sprite myFruit = Resources.Load("New Folder/Buttons/wrong", typeof(Sprite)) as Sprite;
+            GameObject.Find("DragAndDropObject/ButtonAnswer" + index).GetComponent<Image>().sprite = myFruit;
         }
         reader.Close();
+        String[] answerArray = answer.ToString().Split(new string[] { " --- " }, StringSplitOptions.None);
+        if (answerArray[0].Contains("-"))
+        {
+            GameObject.Find("DragAndDropObject/ButtonAnswer" + index + "/" + index).GetComponent<Text>().text = answerArray[0].Trim().Replace("-", answerArray[1].Trim());
+        }
+        else
+        {
+            GameObject.Find("DragAndDropObject/ButtonAnswer" + index + "/" + index).GetComponent<Text>().text = answerArray[0].Trim() + " - " + answerArray[1].Trim();
+        }
     }
 }
