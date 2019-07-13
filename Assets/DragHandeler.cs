@@ -12,28 +12,38 @@ public class DragHandeler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        PlayerPrefs.SetString("OnBeginDrag", gameObject.GetComponentInChildren<Text>().text);
-        PlayerPrefs.Save();
+        if (GameObject.Find("Question/Text").GetComponent<Text>().text.Contains("Drag"))
+        {
+            PlayerPrefs.SetString("OnBeginDrag", gameObject.GetComponentInChildren<Text>().text);
+            PlayerPrefs.Save();
 
-        itemBeingDragged = gameObject;
-        startPosition = transform.position;
-        startParent = transform.parent;
-        GetComponent<CanvasGroup>().blocksRaycasts = false;
+            itemBeingDragged = gameObject;
+            startPosition = transform.position;
+            startParent = transform.parent;
+            GetComponent<CanvasGroup>().blocksRaycasts = false;
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        transform.position = Input.mousePosition;
+        if (GameObject.Find("Question/Text").GetComponent<Text>().text.Contains("Drag"))
+        {
+            transform.position = Input.mousePosition;
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        itemBeingDragged = null;
-        GetComponent<CanvasGroup>().blocksRaycasts = true;
-        transform.position = startPosition;
-        //if (transform.parent != startParent)
-        //{
-        //    transform.position = startPosition;
-        //}
+
+        if (GameObject.Find("Question/Text").GetComponent<Text>().text.Contains("Drag"))
+        {
+            itemBeingDragged = null;
+            GetComponent<CanvasGroup>().blocksRaycasts = true;
+            transform.position = startPosition;
+            //if (transform.parent != startParent)
+            //{
+            //    transform.position = startPosition;
+            //}
+        }
     }
 }
