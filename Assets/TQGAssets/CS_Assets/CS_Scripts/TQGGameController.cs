@@ -422,8 +422,9 @@ namespace TriviaQuizGame
                 questionLimit = 5;
             }
 
-            Debug.Log("Current Category: " + currentCategory + "\n" +
-                      "Question Limit: " + questionLimit);
+            // adpd update
+            //Debug.Log("Current Category: " + currentCategory + "\n" +
+            //          "Question Limit: " + questionLimit);
 
             GameObject.Find("QuestionsCount").GetComponent<Text>().text = "1 of " + questionLimit + "\nQuestions";
 
@@ -687,6 +688,8 @@ namespace TriviaQuizGame
         /// </summary>
         IEnumerator AskQuestion(bool animateQuestion)
         {
+            PlayerPrefs.DeleteKey("IsDragCorrect");
+
             if (isGameOver == false)
             {
                 // This boolean is used to check if we already asked this question, and then ask another instead
@@ -748,14 +751,20 @@ namespace TriviaQuizGame
                     currentQuestion++;
 
                     // adpd update
-                    if (questions[currentQuestion].question.ToString().Contains("Drag"))
+                    try
                     {
-                        // asdasdasd
-                        questionObject.Find("DragAndDropObject").gameObject.SetActive(true);
+                        if (questions[currentQuestion].question.ToString().Contains("Drag"))
+                        {
+                            questionObject.Find("DragAndDropObject").gameObject.SetActive(true);
+                        }
+                        else
+                        {
+                            questionObject.Find("DragAndDropObject").gameObject.SetActive(false);
+                        }
                     }
-                    else
+                    catch (Exception err)
                     {
-                        questionObject.Find("DragAndDropObject").gameObject.SetActive(false);
+
                     }
                     
                     // adpd update
@@ -1104,7 +1113,6 @@ namespace TriviaQuizGame
                             (players[currentPlayer].score >= 8 && currentCategory.ToString().ToLower().Contains("level 2")) ||
                             (players[currentPlayer].score >= 14 && currentCategory.ToString().ToLower().Contains("level 3")))
                         {
-                            Debug.Log("0");
                             StartCoroutine(Victory(0));
                         }
                         else
@@ -1781,7 +1789,6 @@ namespace TriviaQuizGame
             // Record the state of the category as completed
             if (currentCategory != null)
             {
-                print("F");
                 PlayerPrefs.SetInt(currentCategory + "Completed", 1);
 
                 currentCategory = null;

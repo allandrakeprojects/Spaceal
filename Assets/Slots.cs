@@ -93,13 +93,25 @@ public class Slots : MonoBehaviour, IDropHandler
         StreamReader reader = new StreamReader(path);
         if (reader.ReadToEnd().ToString().Contains(answer))
         {
-            Sprite myFruit = Resources.Load("New Folder/Buttons/correct", typeof(Sprite)) as Sprite;
-            GameObject.Find("DragAndDropObject/ButtonAnswer" + index).GetComponent<Image>().sprite = myFruit;
+            Sprite sprite = Resources.Load("New Folder/Buttons/correct", typeof(Sprite)) as Sprite;
+            GameObject.Find("DragAndDropObject/ButtonAnswer" + index).GetComponent<Image>().sprite = sprite;
+            if (PlayerPrefs.GetString("IsDragCorrect") != "")
+            {
+                if (PlayerPrefs.GetString("IsDragCorrect") != "F")
+                {
+                    PlayerPrefs.SetString("IsDragCorrect", "T");
+                }
+            }
+            else
+            {
+                PlayerPrefs.SetString("IsDragCorrect", "T");
+            }
         }
         else
         {
-            Sprite myFruit = Resources.Load("New Folder/Buttons/wrong", typeof(Sprite)) as Sprite;
-            GameObject.Find("DragAndDropObject/ButtonAnswer" + index).GetComponent<Image>().sprite = myFruit;
+            Sprite sprite = Resources.Load("New Folder/Buttons/wrong", typeof(Sprite)) as Sprite;
+            GameObject.Find("DragAndDropObject/ButtonAnswer" + index).GetComponent<Image>().sprite = sprite;
+            PlayerPrefs.SetString("IsDragCorrect", "F");
         }
         reader.Close();
         String[] answerArray = answer.ToString().Split(new string[] { " --- " }, StringSplitOptions.None);
