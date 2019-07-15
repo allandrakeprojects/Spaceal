@@ -1070,8 +1070,18 @@ namespace TriviaQuizGame
                                 randomNumbers.Add(number);
 
                                 //questionObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = questionTitleArray[count].Trim();
-                                questionObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = questionTitleArray[count].Trim();
 
+                                Sprite sprite = Resources.Load("New Folder/Level/DragAndDrop/" + questionTitleArray[count].Trim(), typeof(Sprite)) as Sprite;
+                                if (sprite)
+                                {
+                                    GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponent<Image>().sprite = sprite;
+                                    questionObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = "\n\n\n\n\n\n\n\n\n" + questionTitleArray[count].Trim();
+
+                                }
+                                else
+                                {
+                                    questionObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = questionTitleArray[count].Trim();
+                                }
                                 count++;
                             }
                         }
