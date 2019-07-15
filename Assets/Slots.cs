@@ -111,6 +111,8 @@ public class Slots : MonoBehaviour, IDropHandler
             //GameObject.GetComponent<TQGGameController>();
 
             //StartCoroutine(AskQuestion(true));
+
+            //StartCoroutine(Camera.main.GetComponent<TQGGameController>().AskQuestion(true));
         }
         else
         {
@@ -127,6 +129,23 @@ public class Slots : MonoBehaviour, IDropHandler
         else
         {
             GameObject.Find("DragAndDropObject/ButtonAnswer" + index + "/" + index).GetComponent<Text>().text = answerArray[1].Trim() + ". - " + answerArray[0].Trim();
+        }
+
+        int getDragAndDropCount = PlayerPrefs.GetInt("DragAndDropCount");
+        string getIsDragCorrect = PlayerPrefs.GetString("IsDragCorrect");
+        PlayerPrefs.SetInt("DragAndDropCount", getDragAndDropCount+1);
+        getDragAndDropCount = PlayerPrefs.GetInt("DragAndDropCount");
+        if (getDragAndDropCount == 4)
+        {
+            if (getIsDragCorrect == "T")
+            {
+                Debug.Log("Correct all");
+            }
+            else
+            {
+                Debug.Log("Wrong!!!");
+            }
+            Debug.Log("Reset question");
         }
     }
 }

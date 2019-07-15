@@ -686,9 +686,10 @@ namespace TriviaQuizGame
         /// <summary>
         /// Presents a question from the list, along with possible answers.
         /// </summary>
-        IEnumerator AskQuestion(bool animateQuestion)
+        public IEnumerator AskQuestion(bool animateQuestion)
         {
             PlayerPrefs.DeleteKey("IsDragCorrect");
+            PlayerPrefs.SetInt("DragAndDropCount", 0);
 
             if (isGameOver == false)
             {
