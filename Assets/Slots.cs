@@ -370,7 +370,7 @@ public class Slots : MonoBehaviour, IDropHandler
         }
         else
         {
-            GameObject.Find("DragAndDropObject/ButtonAnswer" + index + "/" + index).GetComponent<Text>().text = answerArray[1].Trim() + ". - " + answerArray[0].Trim();
+            GameObject.Find("DragAndDropObject/ButtonAnswer" + index + "/" + index).GetComponent<Text>().text = answerArray[0].Trim() + " " + answerArray[1].Trim();
         }
 
         int getDragAndDropCount = PlayerPrefs.GetInt("DragAndDropCount");

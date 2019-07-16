@@ -22,3 +22,8 @@ G / H / - --- I
 - / K / L --- J
 - / S / T --- R
 T / - / V --- U
+
+A judge --- decides or presides over court cases
+A doctor --- qualified in medicine and treats people who are sick
+A police officer --- responsible for enforcing the law
+A cook --- cooks meals as their job
