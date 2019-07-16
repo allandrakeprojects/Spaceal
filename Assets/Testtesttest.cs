@@ -21,8 +21,215 @@ namespace TriviaQuizGame
     /// <summary>
     /// This script controls the game, starting it, following game progress, and finishing it with game over.
     /// </summary>
-    public class TQGGameController : MonoBehaviour
+    public class Testtesttest : MonoBehaviour, IDropHandler
     {
+        public GameObject item
+        {
+            get
+            {
+
+                if (transform.childCount > 0)
+                {
+                    //Debug.Log(gameObject.name.ToString().ToLower() + " " + gameObject.GetComponentInChildren<Text>().text);
+                    //if (gameObject.name.ToString().ToLower().Contains("buttonanswer"))
+                    //{
+                    //    if (gameObject.GetComponentInChildren<Text>().text == "L / - / N")
+                    //    {
+                    //        PlayerPrefs.SetString("Question Answer0", "M||" + gameObject.name.ToLower().Replace("buttonanswer", "").ToString() + " ");
+                    //        PlayerPrefs.Save();
+                    //    }
+                    //    if (gameObject.GetComponentInChildren<Text>().text == "V / - / X")
+                    //    {
+                    //        PlayerPrefs.SetString("Question Answer1", "W||" + gameObject.name.ToLower().Replace("buttonanswer", "").ToString() + " ");
+                    //        PlayerPrefs.Save();
+                    //    }
+                    //    if (gameObject.GetComponentInChildren<Text>().text == "- / E / F")
+                    //    {
+                    //        PlayerPrefs.SetString("Question Answer2", "D||" + gameObject.name.ToLower().Replace("buttonanswer", "").ToString() + " ");
+                    //        PlayerPrefs.Save();
+                    //    }
+                    //    if (gameObject.GetComponentInChildren<Text>().text == "- / B / C")
+                    //    {
+                    //        PlayerPrefs.SetString("Question Answer3", "A||" + gameObject.name.ToLower().Replace("buttonanswer", "").ToString() + " ");
+                    //        PlayerPrefs.Save();
+                    //    }
+                    //}
+
+                    //if (gameObject.name.ToString().ToLower().Contains("slot"))
+                    //{
+                    //    string correctOrWrong = "";
+                    //    for (int i = 0; i < 4; i++)
+                    //    {
+                    //        if (PlayerPrefs.GetString("Question Answer" + i).Trim() == gameObject.GetComponentInChildren<Text>().text + "||" + gameObject.name.ToLower().Replace("slot", "").ToString().Trim())
+                    //        {
+                    //            correctOrWrong = "correct";
+                    //            PlayerPrefs.DeleteKey("Question Answer" + i);
+                    //            int questionAnswerCount = PlayerPrefs.GetInt("Question Answer Count");
+                    //            PlayerPrefs.DeleteKey("Question Answer Count");
+                    //            PlayerPrefs.SetInt("Question Answer Count", questionAnswerCount - 1);
+                    //            PlayerPrefs.Save();
+                    //            break;
+                    //        }
+                    //        else
+                    //        {
+                    //            correctOrWrong = "wrong";
+                    //        }
+                    //    }
+
+                    //    Debug.Log(correctOrWrong);
+                    //}
+
+                    return transform.GetChild(0).gameObject;
+                }
+
+                return null;
+            }
+        }
+
+        public void OnDrop(PointerEventData eventData)
+        {
+            if (!item)
+            {
+                // Drag and Drop Correct or Wrong
+                string answer = gameObject.GetComponentInChildren<Text>().text + " --- " + PlayerPrefs.GetString("OnBeginDrag");
+                ReadString(answer.Trim(), gameObject.name);
+                DragHandeler.itemBeingDragged.transform.SetParent(transform);
+                ExecuteEvents.ExecuteHierarchy<IHasChanged>(gameObject, null, (x, y) => x.HasChanged());
+            }
+        }
+
+        [MenuItem("Tools/Read file")]
+        public void ReadString(string answer, string index)
+        {
+            string path = "Assets/TQGAssets/Resources/ELDragAndDrop.txt";
+            StreamReader reader = new StreamReader(path);
+            if (reader.ReadToEnd().ToString().Contains(answer))
+            {
+                Sprite sprite = Resources.Load("New Folder/Buttons/correct", typeof(Sprite)) as Sprite;
+                GameObject.Find("DragAndDropObject/ButtonAnswer" + index).GetComponent<Image>().sprite = sprite;
+                if (PlayerPrefs.GetString("IsDragCorrect") != "")
+                {
+                    if (PlayerPrefs.GetString("IsDragCorrect") != "F")
+                    {
+                        PlayerPrefs.SetString("IsDragCorrect", "T");
+                    }
+                }
+                else
+                {
+                    PlayerPrefs.SetString("IsDragCorrect", "T");
+                }
+
+                //GameObject.GetComponent<Testtesttest>();
+
+                //StartCoroutine(AskQuestion(true));
+
+                //StartCoroutine(Camera.main.GetComponent<Testtesttest>().AskQuestion(true));
+            }
+            else
+            {
+                Sprite sprite = Resources.Load("New Folder/Buttons/wrong", typeof(Sprite)) as Sprite;
+                GameObject.Find("DragAndDropObject/ButtonAnswer" + index).GetComponent<Image>().sprite = sprite;
+                PlayerPrefs.SetString("IsDragCorrect", "F");
+            }
+            reader.Close();
+            String[] answerArray = answer.ToString().Split(new string[] { " --- " }, StringSplitOptions.None);
+            if (answerArray[0].Contains("-"))
+            {
+                GameObject.Find("DragAndDropObject/ButtonAnswer" + index + "/" + index).GetComponent<Text>().text = answerArray[0].Trim().Replace("-", answerArray[1].Trim());
+            }
+            else
+            {
+                GameObject.Find("DragAndDropObject/ButtonAnswer" + index + "/" + index).GetComponent<Text>().text = answerArray[1].Trim() + ". - " + answerArray[0].Trim();
+            }
+
+            int getDragAndDropCount = PlayerPrefs.GetInt("DragAndDropCount");
+            string getIsDragCorrect = PlayerPrefs.GetString("IsDragCorrect");
+            PlayerPrefs.SetInt("DragAndDropCount", getDragAndDropCount + 1);
+            getDragAndDropCount = PlayerPrefs.GetInt("DragAndDropCount");
+            if (getDragAndDropCount == 4)
+            {
+                if (getIsDragCorrect == "T")
+                {
+                    Debug.Log("Correct all");
+                    StartCoroutine(Victory(0));
+                }
+                else
+                {
+                    Debug.Log("Wrong!!!");
+                }
+                Debug.Log("Reset question");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         // Holds the current event system
         internal EventSystem eventSystem;
 
@@ -768,9 +975,9 @@ namespace TriviaQuizGame
                     {
 
                     }
-                    
+
                     // adpd update
-                    int currentQuestionText = currentQuestion+1;
+                    int currentQuestionText = currentQuestion + 1;
                     if (currentQuestionText <= questionLimit)
                     {
                         GameObject.Find("QuestionsCount").GetComponent<Text>().text = currentQuestionText + " of " + questionLimit + "\nQuestions";
@@ -2037,7 +2244,8 @@ namespace TriviaQuizGame
             //players = new Player[numberOfPlayers];
 
             // Update the current list of players based on numberOfPlayers
-            UpdatePlayers();
+            // adpd update
+            //UpdatePlayers();
         }
 
         /// <summary>
