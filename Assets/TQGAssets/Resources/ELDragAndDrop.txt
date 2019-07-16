@@ -8,3 +8,17 @@ A plumber --- fixes water pipes
 A firefighter --- puts out fire
 A teacher --- provides education to students
 
+P / - / R --- Q
+S / - / U --- T
+U / - / W --- V
+N / - / P --- O
+
+O / - / Q --- P
+T / - / V --- U
+R / - / T --- S
+D / - / F --- E
+
+G / H / - --- I
+- / K / L --- J
+- / S / T --- R
+T / - / V --- U

@@ -712,6 +712,7 @@ namespace TriviaQuizGame
         {
             PlayerPrefs.DeleteKey("IsDragCorrect");
             PlayerPrefs.SetInt("DragAndDropCount", 0);
+            PlayerPrefs.SetInt("DragAndDropScore", 0);
 
             if (isGameOver == false)
             {

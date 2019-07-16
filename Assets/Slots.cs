@@ -165,7 +165,7 @@ public class Slots : MonoBehaviour, IDropHandler
 
     void AskQuestion()
     {
-        if (PlayerPrefs.GetInt("DragAndDropCurrentCount") <= 2)
+        if (PlayerPrefs.GetInt("DragAndDropCurrentCount") <= PlayerPrefs.GetInt("DragAndDropLimit"))
         {
             GameObject.Find("QuestionsCount").GetComponent<Text>().text = PlayerPrefs.GetInt("DragAndDropCurrentCount") + " of " + PlayerPrefs.GetInt("DragAndDropLimit") + "\nQuestions";
             // Next question
@@ -214,6 +214,7 @@ public class Slots : MonoBehaviour, IDropHandler
             print("computation");
         }
 
+        PlayerPrefs.DeleteKey("IsDragCorrect");
         PlayerPrefs.SetInt("DragAndDropCount", 0);
     }
 
@@ -221,24 +222,19 @@ public class Slots : MonoBehaviour, IDropHandler
 
     void Update()
     {
-        // Move the players object so that the current player is centered in the screen
-        if (players[currentPlayer].nameText && bonusObject.position.x != players[currentPlayer].nameText.transform.position.x)
-        {
-            playersObject.anchoredPosition = new Vector2(Mathf.Lerp(playersObject.anchoredPosition.x, currentPlayer * -200 - 100, Time.deltaTime * 10), playersObject.anchoredPosition.y);
-        }
+        //// Make the score count up to its current value, for the current player
+        //print(players[currentPlayer].score + " --- " + players[currentPlayer].scoreCount);
+        //if (players[currentPlayer].score < players[currentPlayer].scoreCount)
+        //{
+        //    // Count up to the courrent value
+        //    players[currentPlayer].score = Mathf.Lerp(players[currentPlayer].score, players[currentPlayer].scoreCount, Time.deltaTime * 10);
 
-        // Make the score count up to its current value, for the current player
-        if (players[currentPlayer].score < players[currentPlayer].scoreCount)
-        {
-            // Count up to the courrent value
-            players[currentPlayer].score = Mathf.Lerp(players[currentPlayer].score, players[currentPlayer].scoreCount, Time.deltaTime * 10);
+        //    // Round up the score value
+        //    players[currentPlayer].score = Mathf.CeilToInt(players[currentPlayer].score);
 
-            // Round up the score value
-            players[currentPlayer].score = Mathf.CeilToInt(players[currentPlayer].score);
-
-            // Update the score text
-            UpdateScore();
-        }
+        //    // Update the score text
+        //    UpdateScore();
+        //}
     }
 
     void UpdateScore()
@@ -263,7 +259,6 @@ public class Slots : MonoBehaviour, IDropHandler
     {
         get
         {
-
             if (transform.childCount > 0)
             {
                 //Debug.Log(gameObject.name.ToString().ToLower() + " " + gameObject.GetComponentInChildren<Text>().text);
@@ -387,7 +382,14 @@ public class Slots : MonoBehaviour, IDropHandler
             if (getIsDragCorrect == "T")
             {
                 Debug.Log("Correct all dasdasdasdas");
-                players[currentPlayer].scoreCount += 1;
+
+                int dragAndDropScore = PlayerPrefs.GetInt("DragAndDropScore");
+                PlayerPrefs.SetInt("DragAndDropScore", dragAndDropScore+1);
+                GameObject.Find("ScoreText").GetComponent<Text>().text = "Score: " + (dragAndDropScore+1);
+                //players[currentPlayer].score = Mathf.Lerp(players[currentPlayer].score, players[currentPlayer].scoreCount, Time.deltaTime * 10);
+                //players[currentPlayer].score = Mathf.CeilToInt(players[currentPlayer].score);
+                print(players[currentPlayer].score + " --- " + players[currentPlayer].scoreCount);
+
 
 
                 if (bonusObject && bonusObject.GetComponent<Animation>())
