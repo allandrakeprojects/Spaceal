@@ -233,14 +233,6 @@ public class Slots : MonoBehaviour, IDropHandler
                 // Update the score text
                 UpdateScore();
             }
-
-            // Update the lives bar
-            if (players[currentPlayer].livesBar)
-            {
-                // If the lives bar has a text in it, update it. Otherwise, resize the lives bar based on the number of lives left
-                if (players[currentPlayer].livesBar.transform.Find("Text")) players[currentPlayer].livesBar.transform.Find("Text").GetComponent<Text>().text = players[currentPlayer].lives.ToString();
-                else players[currentPlayer].livesBar.rectTransform.sizeDelta = Vector2.Lerp(players[currentPlayer].livesBar.rectTransform.sizeDelta, new Vector2(players[currentPlayer].lives * livesBarWidth, players[currentPlayer].livesBar.rectTransform.sizeDelta.y), Time.deltaTime * 8);
-            }
         }
     }
 
