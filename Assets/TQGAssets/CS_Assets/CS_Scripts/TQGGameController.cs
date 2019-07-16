@@ -423,6 +423,8 @@ namespace TriviaQuizGame
                 questionLimit = 5;
             }
 
+            PlayerPrefs.SetInt("DragAndDropLimit", questionLimit);
+
             // adpd update
             //Debug.Log("Current Category: " + currentCategory + "\n" +
             //          "Question Limit: " + questionLimit);
@@ -642,12 +644,13 @@ namespace TriviaQuizGame
 
                 if (questions[i].question.ToLower().Contains("drag"))
                 {
-                    PlayerPrefs.SetString("DragAndDrop" + i, questions[i].question + " --- " + answers);
+                    int asd = i + 1;
+                    PlayerPrefs.SetString("DragAndDrop" + asd, questions[i].question + " --- " + answers);
                     answers = "";
                 }
             }
 
-            PlayerPrefs.SetInt("DragAndDropCurrentCount", 0);
+            PlayerPrefs.SetInt("DragAndDropCurrentCount", 1);
         }
 
         /// <summary>

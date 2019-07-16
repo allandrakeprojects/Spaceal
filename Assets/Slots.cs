@@ -165,45 +165,53 @@ public class Slots : MonoBehaviour, IDropHandler
 
     void AskQuestion()
     {
-        // Next question
-        string questionAnswer = PlayerPrefs.GetString("DragAndDrop" + PlayerPrefs.GetInt("DragAndDropCurrentCount"));
-        String[] questionAnswerArray = questionAnswer.ToString().Replace("Drag the answer to complete the question.", "").Split(new string[] { " --- " }, StringSplitOptions.None);
-
-        string question = questionAnswerArray[0];
-        string answer = questionAnswerArray[1];
-        String[] questionArray = question.ToString().Split(new string[] { " || " }, StringSplitOptions.None);
-        String[] answerArray = answer.ToString().Split(new string[] { " || " }, StringSplitOptions.None);
-        List<int> randomNumbers = new List<int>();
-        for (int i = 0; i < 4; i++)
+        if (PlayerPrefs.GetInt("DragAndDropCurrentCount") <= 2)
         {
-            int number;
+            GameObject.Find("QuestionsCount").GetComponent<Text>().text = PlayerPrefs.GetInt("DragAndDropCurrentCount") + " of " + PlayerPrefs.GetInt("DragAndDropLimit") + "\nQuestions";
+            // Next question
+            string questionAnswer = PlayerPrefs.GetString("DragAndDrop" + PlayerPrefs.GetInt("DragAndDropCurrentCount"));
+            String[] questionAnswerArray = questionAnswer.ToString().Replace("Drag the answer to complete the question.", "").Split(new string[] { " --- " }, StringSplitOptions.None);
 
-            do number = rand.Next(0, 4);
-            while (randomNumbers.Contains(number));
-
-            randomNumbers.Add(number);
-
-            Sprite sprite = Resources.Load("New Folder/Level/DragAndDrop/" + questionArray[i].Trim(), typeof(Sprite)) as Sprite;
-            if (sprite)
+            string question = questionAnswerArray[0];
+            string answer = questionAnswerArray[1];
+            String[] questionArray = question.ToString().Split(new string[] { " || " }, StringSplitOptions.None);
+            String[] answerArray = answer.ToString().Split(new string[] { " || " }, StringSplitOptions.None);
+            List<int> randomNumbers = new List<int>();
+            for (int i = 0; i < 4; i++)
             {
-                GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponent<Image>().sprite = sprite;
-                GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = "\n\n\n\n\n\n\n\n\n" + questionArray[i].Trim();
+                int number;
 
+                do number = rand.Next(0, 4);
+                while (randomNumbers.Contains(number));
+
+                randomNumbers.Add(number);
+
+                Sprite sprite = Resources.Load("New Folder/Level/DragAndDrop/" + questionArray[i].Trim(), typeof(Sprite)) as Sprite;
+                if (sprite)
+                {
+                    GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponent<Image>().sprite = sprite;
+                    GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = "\n\n\n\n\n\n\n\n\n" + questionArray[i].Trim();
+
+                }
+                else
+                {
+                    Sprite sprite_ = Resources.Load("New Folder/Buttons/buttonblue", typeof(Sprite)) as Sprite;
+                    GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponent<Image>().sprite = sprite_;
+                    GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = questionArray[i].Trim();
+                }
+
+
+                GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Image>().enabled = true;
+                GameObject.Find("Answers/ButtonAnswer" + number + "/Text").GetComponent<Text>().text = answerArray[i].Trim();
+
+                // Play the animation
+                GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Animation>().AddClip(animationShow, animationShow.name);
+                GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Animation>().Play(animationShow.name);
             }
-            else
-            {
-                Sprite sprite_ = Resources.Load("New Folder/Buttons/buttonblue", typeof(Sprite)) as Sprite;
-                GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponent<Image>().sprite = sprite_;
-                GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = questionArray[i].Trim();
-            }
-
-
-            GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Image>().enabled = true;
-            GameObject.Find("Answers/ButtonAnswer" + number + "/Text").GetComponent<Text>().text = answerArray[i].Trim();
-
-            // Play the animation
-            GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Animation>().AddClip(animationShow, animationShow.name);
-            GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Animation>().Play(animationShow.name);
+        }
+        else
+        {
+            print("computation");
         }
 
         PlayerPrefs.SetInt("DragAndDropCount", 0);
@@ -213,26 +221,23 @@ public class Slots : MonoBehaviour, IDropHandler
 
     void Update()
     {
-        if (currentPlayer < players.Length)
+        // Move the players object so that the current player is centered in the screen
+        if (players[currentPlayer].nameText && bonusObject.position.x != players[currentPlayer].nameText.transform.position.x)
         {
-            // Move the players object so that the current player is centered in the screen
-            if (players[currentPlayer].nameText && bonusObject.position.x != players[currentPlayer].nameText.transform.position.x)
-            {
-                playersObject.anchoredPosition = new Vector2(Mathf.Lerp(playersObject.anchoredPosition.x, currentPlayer * -200 - 100, Time.deltaTime * 10), playersObject.anchoredPosition.y);
-            }
+            playersObject.anchoredPosition = new Vector2(Mathf.Lerp(playersObject.anchoredPosition.x, currentPlayer * -200 - 100, Time.deltaTime * 10), playersObject.anchoredPosition.y);
+        }
 
-            // Make the score count up to its current value, for the current player
-            if (players[currentPlayer].score < players[currentPlayer].scoreCount)
-            {
-                // Count up to the courrent value
-                players[currentPlayer].score = Mathf.Lerp(players[currentPlayer].score, players[currentPlayer].scoreCount, Time.deltaTime * 10);
+        // Make the score count up to its current value, for the current player
+        if (players[currentPlayer].score < players[currentPlayer].scoreCount)
+        {
+            // Count up to the courrent value
+            players[currentPlayer].score = Mathf.Lerp(players[currentPlayer].score, players[currentPlayer].scoreCount, Time.deltaTime * 10);
 
-                // Round up the score value
-                players[currentPlayer].score = Mathf.CeilToInt(players[currentPlayer].score);
+            // Round up the score value
+            players[currentPlayer].score = Mathf.CeilToInt(players[currentPlayer].score);
 
-                // Update the score text
-                UpdateScore();
-            }
+            // Update the score text
+            UpdateScore();
         }
     }
 
