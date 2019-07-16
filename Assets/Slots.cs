@@ -54,9 +54,66 @@ public class Slots : MonoBehaviour, IDropHandler
     public Transform bonusObject;
 
 
+    // Questions
+    [Tooltip("A list of all possible questions in the game. Each question has a number of correct/wrong answers, a followup text, a bonus value, time, and can also have an image/video as the background of the question")]
+    public Question[] questions;
+    internal Question[] questionsTemp;
+
+    [Header("<Animation & Sounds>")]
+    [Tooltip("The animation that plays when showing an answer")]
+    public AnimationClip animationShow;
 
 
+    // Is the game over?
+    internal bool isGameOver = false;
 
+    // Is a question being asked right now?
+    internal bool askingQuestion;
+
+    [Tooltip("How many questions from the current bonus group should be asked before moving on to the next group. If we dont sort the questions by bonus groups, then this value is ignored. If there are several players in the game, the value of Questions Per Group will be multiplied by the number of players, so that each one can have a chance to answer a question from the same group before moving on to the next group")]
+    public int questionsPerGroup = 2;
+    internal int defaultQuestionsPerGroup;
+    internal int questionCount = 0;
+
+    // Holds the name of the category loaded into this quiz, if it exists
+    internal string currentCategory;
+
+    // The index of the current question being asked. -1 is the index of the first question, 0 the index of the second, and so on
+    internal int currentQuestion = -1;
+
+    [Tooltip("Prevent a quiz from repeating questions. Once all questions in a quiz have been asked, they will repeat again.")]
+    public bool dontRepeatQuestions = true;
+
+    [Tooltip("Limit the total number of questions asked, regardless of whether we answered correctly or not. Use this if you want to have a strict number of questions asked in the game (ex: 10 questions). If you keep it at 0 the number of questions will not be limited and you will go through all the question groups in the quiz before finishing it")]
+    public int questionLimit = 0;
+
+    // How many seconds are left before game over
+    internal float timeLeft = 10;
+
+    // Is the timer running?
+    internal bool timerRunning = false;
+
+    [Tooltip("If we set this time higher than 0, it will override the individual times for each question. The global time does not reset between questions")]
+    public float globalTime = 0;
+
+    // A general use index
+    internal int index = 0;
+    internal int indexB = 0;
+
+    [Tooltip("Randomize the list of questions. Use this if you don't want the questions to appear in the same order every time you play. Combine this with 'sortQuestions' if you want the questions to be randomized within the bonus groups.")]
+    public bool randomizeQuestions = true;
+
+    //The buttons that display the possible answers
+    internal Transform[] answerObjects;
+
+    [Tooltip("Randomize the display order of answers when a new question is presented")]
+    public bool randomizeAnswers = true;
+
+    // The total number of questions we asked. This is used to check if we reached the question limit.
+    internal int questionLimitCount = 0;
+
+    [Tooltip("Sort the list of questions from lowest bonus to highest bonus and put them into groups. Use this if you want the questions to be displayed from the easiest to the hardest ( The difficulty of a question is decided by the bonus value you give to it )")]
+    public bool sortQuestions = true;
 
 
 
@@ -103,8 +160,56 @@ public class Slots : MonoBehaviour, IDropHandler
             bonusObject.Find("Text").GetComponent<Text>().text = "+1";
         }
 
-        // Next question
+        AskQuestion();
     }
+
+    void AskQuestion()
+    {
+        // Next question
+        string questionAnswer = PlayerPrefs.GetString("DragAndDrop" + PlayerPrefs.GetInt("DragAndDropCurrentCount"));
+        String[] questionAnswerArray = questionAnswer.ToString().Replace("Drag the answer to complete the question.", "").Split(new string[] { " --- " }, StringSplitOptions.None);
+
+        string question = questionAnswerArray[0];
+        string answer = questionAnswerArray[1];
+        String[] questionArray = question.ToString().Split(new string[] { " || " }, StringSplitOptions.None);
+        String[] answerArray = answer.ToString().Split(new string[] { " || " }, StringSplitOptions.None);
+        List<int> randomNumbers = new List<int>();
+        for (int i = 0; i < 4; i++)
+        {
+            int number;
+
+            do number = rand.Next(0, 4);
+            while (randomNumbers.Contains(number));
+
+            randomNumbers.Add(number);
+
+            Sprite sprite = Resources.Load("New Folder/Level/DragAndDrop/" + questionArray[i].Trim(), typeof(Sprite)) as Sprite;
+            if (sprite)
+            {
+                GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponent<Image>().sprite = sprite;
+                GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = "\n\n\n\n\n\n\n\n\n" + questionArray[i].Trim();
+
+            }
+            else
+            {
+                Sprite sprite_ = Resources.Load("New Folder/Buttons/buttonblue", typeof(Sprite)) as Sprite;
+                GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponent<Image>().sprite = sprite_;
+                GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = questionArray[i].Trim();
+            }
+
+
+            GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Image>().enabled = true;
+            GameObject.Find("Answers/ButtonAnswer" + number + "/Text").GetComponent<Text>().text = answerArray[i].Trim();
+
+            // Play the animation
+            GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Animation>().AddClip(animationShow, animationShow.name);
+            GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Animation>().Play(animationShow.name);
+        }
+
+        PlayerPrefs.SetInt("DragAndDropCount", 0);
+    }
+
+    private System.Random rand = new System.Random();
 
     void Update()
     {
@@ -139,8 +244,6 @@ public class Slots : MonoBehaviour, IDropHandler
         }
     }
 
-
-
     void UpdateScore()
     {
         //Update the score text
@@ -155,17 +258,9 @@ public class Slots : MonoBehaviour, IDropHandler
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
+    void Start()
+    {
+    }
 
     public GameObject item
     {
@@ -235,10 +330,16 @@ public class Slots : MonoBehaviour, IDropHandler
         if (!item)
         {
             // Drag and Drop Correct or Wrong
-            string answer = gameObject.GetComponentInChildren<Text>().text + " --- " + PlayerPrefs.GetString("OnBeginDrag");
+            string questionGameObject = PlayerPrefs.GetString("OnBeginDrag");
+            String[] questionGameObjectArray = questionGameObject.ToString().Split(new string[] { " || " }, StringSplitOptions.None);
+            string answer_ = questionGameObjectArray[0];
+            string gameObject_ = questionGameObjectArray[1];
+            string answer = gameObject.GetComponentInChildren<Text>().text + " --- " + answer_;
             ReadString(answer.Trim(), gameObject.name);
-            DragHandeler.itemBeingDragged.transform.SetParent(transform);
-            ExecuteEvents.ExecuteHierarchy<IHasChanged>(gameObject, null, (x, y) => x.HasChanged());
+            //DragHandeler.itemBeingDragged.transform.SetParent(transform);
+            //ExecuteEvents.ExecuteHierarchy<IHasChanged>(gameObject, null, (x, y) => x.HasChanged());
+            GameObject.Find("Answers/" + gameObject_).GetComponent<Image>().enabled = false;
+            GameObject.Find("Answers/" + gameObject_).GetComponentInChildren<Text>().text = "";
         }
     }
 
@@ -262,12 +363,6 @@ public class Slots : MonoBehaviour, IDropHandler
             {
                 PlayerPrefs.SetString("IsDragCorrect", "T");
             }
-
-            //GameObject.GetComponent<TQGGameController>();
-
-            //StartCoroutine(AskQuestion(true));
-
-            //StartCoroutine(Camera.main.GetComponent<TQGGameController>().AskQuestion(true));
         }
         else
         {
@@ -312,6 +407,8 @@ public class Slots : MonoBehaviour, IDropHandler
                 Debug.Log("Wrong!!!");
             }
             Debug.Log("Reset question");
+            int getDragAndDropCurrentCount = PlayerPrefs.GetInt("DragAndDropCurrentCount", 0);
+            PlayerPrefs.SetInt("DragAndDropCurrentCount", getDragAndDropCurrentCount + 1);
             StartCoroutine(QuestionFlip(0.5f));
         }
     }

@@ -630,6 +630,24 @@ namespace TriviaQuizGame
                 // If we are not sorting by bonus groups, then there is no need to limit the number of questions per group
                 questionsPerGroup = questions.Length;
             }
+
+            string answers = "";
+            for (int i = 0; i < questions.Length; i++)
+            {
+                questions[i].answers = ShuffleAnswers(questions[i].answers);
+                for (index = 0; index < questions[i].answers.Length; index++)//  answerObjects.Length; index++)
+                {
+                    answers += questions[i].answers[index].answer + " || ";
+                }
+
+                if (questions[i].question.ToLower().Contains("drag"))
+                {
+                    PlayerPrefs.SetString("DragAndDrop" + i, questions[i].question + " --- " + answers);
+                    answers = "";
+                }
+            }
+
+            PlayerPrefs.SetInt("DragAndDropCurrentCount", 0);
         }
 
         /// <summary>
@@ -1169,7 +1187,9 @@ namespace TriviaQuizGame
 
             }
         }
+
         private System.Random rand = new System.Random();
+
         /// <summary>
         /// Chooses an answer from the list by index
         /// </summary>
