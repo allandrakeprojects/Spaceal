@@ -325,16 +325,9 @@ public class Slots : MonoBehaviour, IDropHandler
         {
             if (getIsDragCorrect == "T")
             {
-                Debug.Log("Correct all dasdasdasdas");
-
                 int dragAndDropScore = PlayerPrefs.GetInt("DragAndDropScore");
                 PlayerPrefs.SetInt("DragAndDropScore", dragAndDropScore + 1);
                 GameObject.Find("ScoreText").GetComponent<Text>().text = "Score: " + (dragAndDropScore + 1);
-                //players[currentPlayer].score = Mathf.Lerp(players[currentPlayer].score, players[currentPlayer].scoreCount, Time.deltaTime * 10);
-                //players[currentPlayer].score = Mathf.CeilToInt(players[currentPlayer].score);
-                print(players[currentPlayer].score + " --- " + players[currentPlayer].scoreCount);
-
-
 
                 if (bonusObject && bonusObject.GetComponent<Animation>())
                 {
@@ -345,11 +338,6 @@ public class Slots : MonoBehaviour, IDropHandler
                     bonusObject.GetComponent<Animation>()[bonusObject.GetComponent<Animation>().clip.name].speed = 1;
                 }
             }
-            else
-            {
-                Debug.Log("Wrong!!!");
-            }
-            Debug.Log("Reset question");
             int getDragAndDropCurrentCount = PlayerPrefs.GetInt("DragAndDropCurrentCount", 0);
             PlayerPrefs.SetInt("DragAndDropCurrentCount", getDragAndDropCurrentCount + 1);
             StartCoroutine(QuestionFlip(0.5f));

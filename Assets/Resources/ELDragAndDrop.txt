@@ -27,3 +27,23 @@ A judge --- decides or presides over court cases
 A doctor --- qualified in medicine and treats people who are sick
 A police officer --- responsible for enforcing the law
 A cook --- cooks meals as their job
+
+A singer --- who sing a song
+A magician --- have rabbit in the hat
+An actor --- acting on the stage, in movies, or on television
+A hairdresser --- who cuts and styles hair as an occupation
+
+An architect --- designs buildings
+An engineer --- builds, maintains engines, machines, or public works
+A secretary --- helps in an office
+A journalist --- writes for a newspaper
+
+A farmer --- who owns or manages a farm
+A chef --- cook in a restaurant or hotel
+A dentist --- qualified to treat conditions that affect the teeth and gums
+A bank teller --- pay out and take in money in a bank
+
+A computer programmer --- writes programs for the operation of computers
+A flight attendant --- steward or stewardess on an aircraft
+A maid --- domestic servant
+A fisherman --- catches fish for a living
