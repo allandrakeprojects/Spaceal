@@ -424,6 +424,7 @@ namespace TriviaQuizGame
             }
 
             PlayerPrefs.SetInt("DragAndDropLimit", questionLimit);
+            PlayerPrefs.SetString("Category", currentCategory);
 
             // adpd update
             //Debug.Log("Current Category: " + currentCategory + "\n" +
@@ -1143,9 +1144,8 @@ namespace TriviaQuizGame
 
                         //If we have no more questions, we win the game!
                         // adpd update
-                        if ((players[currentPlayer].score >= 4 && currentCategory.ToString().ToLower().Contains("level 1")) ||
-                            (players[currentPlayer].score >= 8 && currentCategory.ToString().ToLower().Contains("level 2")) ||
-                            (players[currentPlayer].score >= 14 && currentCategory.ToString().ToLower().Contains("level 3")))
+                        if ((players[currentPlayer].score >= 7 && currentCategory.ToString().ToLower().Contains("level 1")) ||
+                            (players[currentPlayer].score >= 17))
                         {
                             StartCoroutine(Victory(0));
                         }
@@ -1170,9 +1170,8 @@ namespace TriviaQuizGame
                         if (questionLimitCount > questionLimit)
                         {
                             // adpd update
-                            if ((players[currentPlayer].score >= 4 && currentCategory.ToString().ToLower().Contains("level 1")) ||
-                                (players[currentPlayer].score >= 8 && currentCategory.ToString().ToLower().Contains("level 2")) ||
-                                (players[currentPlayer].score >= 14 && currentCategory.ToString().ToLower().Contains("level 3")))
+                            if ((players[currentPlayer].score >= 7 && currentCategory.ToString().ToLower().Contains("level 1")) ||
+                                (players[currentPlayer].score >= 17))
                             {
                                 StartCoroutine(Victory(0));
                             }
@@ -1781,26 +1780,21 @@ namespace TriviaQuizGame
 #endif
                 }
 
-                if ((questionLimit == 5 && players[currentPlayer].score == 3) ||
-                    (questionLimit == 10 && players[currentPlayer].score == 7) ||
-                    (questionLimit == 15 && players[currentPlayer].score == 13))
+                if ((questionLimit == 10 && players[currentPlayer].score == 6) ||
+                    (questionLimit == 20 && players[currentPlayer].score == 16))
                 {
                     gameOverCanvas.Find("TextTitle").GetComponent<Text>().text = "YOU CAN DO IT!";
                 }
 
                 //Write the high sscore text
                 int passingScore = 0;
-                if (questionLimit == 5)
+                if (questionLimit == 10)
                 {
-                    passingScore = 4;
+                    passingScore = 7;
                 }
-                else if (questionLimit == 10)
+                else if (questionLimit == 20)
                 {
-                    passingScore = 8;
-                }
-                else if (questionLimit == 15)
-                {
-                    passingScore = 14;
+                    passingScore = 17;
                 }
                 gameOverCanvas.Find("ScoreTexts/TextHighScore").GetComponent<Text>().text += "Passing score is " + passingScore;
 
@@ -1840,11 +1834,20 @@ namespace TriviaQuizGame
                 // If we have a TextScore and TextHighScore objects, then we are using the single player victory canvas
                 if (victoryCanvas.Find("ScoreTexts/TextScore") && victoryCanvas.Find("ScoreTexts/TextHighScore"))
                 {
-                    if ((questionLimit == 5 && players[currentPlayer].score == 5) ||
-                        (questionLimit == 10 && players[currentPlayer].score == 10) ||
-                        (questionLimit == 15 && players[currentPlayer].score == 15))
+                    if ((questionLimit == 10 && players[currentPlayer].score == 10) ||
+                        (questionLimit == 20 && players[currentPlayer].score == 20))
                     {
+                        // 3 stars
                         victoryCanvas.Find("TextTitle").GetComponent<Text>().text = "PERFECT!";
+                    }
+                    else if ((questionLimit == 10 && (players[currentPlayer].score <= 9 && players[currentPlayer].score <= 7)) ||
+                            (questionLimit == 20 && (players[currentPlayer].score <= 19 && players[currentPlayer].score <= 17)))
+                    {
+                        // 2 stars
+                    }
+                    else
+                    {
+                        // 1 stars
                     }
 
                     //Write the score text, if it exists
