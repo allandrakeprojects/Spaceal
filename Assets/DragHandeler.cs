@@ -34,7 +34,6 @@ public class DragHandeler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
     public void OnEndDrag(PointerEventData eventData)
     {
-
         if (GameObject.Find("Question/Text").GetComponent<Text>().text.Contains("Drag"))
         {
             itemBeingDragged = null;

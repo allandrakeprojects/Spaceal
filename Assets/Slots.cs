@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using TriviaQuizGame;
 using TriviaQuizGame.Types;
 using UnityEditor;
@@ -200,7 +201,6 @@ public class Slots : MonoBehaviour, IDropHandler
                     GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = questionArray[i].Trim();
                 }
 
-
                 GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Image>().enabled = true;
                 GameObject.Find("Answers/ButtonAnswer" + number + "/Text").GetComponent<Text>().text = answerArray[i].Trim();
 
@@ -250,66 +250,12 @@ public class Slots : MonoBehaviour, IDropHandler
         //if (scoreToVictory > 0 && players[currentPlayer].score >= scoreToVictory) StartCoroutine(Victory(0));
     }
 
-
-    void Start()
-    {
-    }
-
     public GameObject item
     {
         get
         {
             if (transform.childCount > 0)
             {
-                //Debug.Log(gameObject.name.ToString().ToLower() + " " + gameObject.GetComponentInChildren<Text>().text);
-                //if (gameObject.name.ToString().ToLower().Contains("buttonanswer"))
-                //{
-                //    if (gameObject.GetComponentInChildren<Text>().text == "L / - / N")
-                //    {
-                //        PlayerPrefs.SetString("Question Answer0", "M||" + gameObject.name.ToLower().Replace("buttonanswer", "").ToString() + " ");
-                //        PlayerPrefs.Save();
-                //    }
-                //    if (gameObject.GetComponentInChildren<Text>().text == "V / - / X")
-                //    {
-                //        PlayerPrefs.SetString("Question Answer1", "W||" + gameObject.name.ToLower().Replace("buttonanswer", "").ToString() + " ");
-                //        PlayerPrefs.Save();
-                //    }
-                //    if (gameObject.GetComponentInChildren<Text>().text == "- / E / F")
-                //    {
-                //        PlayerPrefs.SetString("Question Answer2", "D||" + gameObject.name.ToLower().Replace("buttonanswer", "").ToString() + " ");
-                //        PlayerPrefs.Save();
-                //    }
-                //    if (gameObject.GetComponentInChildren<Text>().text == "- / B / C")
-                //    {
-                //        PlayerPrefs.SetString("Question Answer3", "A||" + gameObject.name.ToLower().Replace("buttonanswer", "").ToString() + " ");
-                //        PlayerPrefs.Save();
-                //    }
-                //}
-
-                //if (gameObject.name.ToString().ToLower().Contains("slot"))
-                //{
-                //    string correctOrWrong = "";
-                //    for (int i = 0; i < 4; i++)
-                //    {
-                //        if (PlayerPrefs.GetString("Question Answer" + i).Trim() == gameObject.GetComponentInChildren<Text>().text + "||" + gameObject.name.ToLower().Replace("slot", "").ToString().Trim())
-                //        {
-                //            correctOrWrong = "correct";
-                //            PlayerPrefs.DeleteKey("Question Answer" + i);
-                //            int questionAnswerCount = PlayerPrefs.GetInt("Question Answer Count");
-                //            PlayerPrefs.DeleteKey("Question Answer Count");
-                //            PlayerPrefs.SetInt("Question Answer Count", questionAnswerCount - 1);
-                //            PlayerPrefs.Save();
-                //            break;
-                //        }
-                //        else
-                //        {
-                //            correctOrWrong = "wrong";
-                //        }
-                //    }
-
-                //    Debug.Log(correctOrWrong);
-                //}
-
                 return transform.GetChild(0).gameObject;
             }
 
@@ -335,12 +281,11 @@ public class Slots : MonoBehaviour, IDropHandler
         }
     }
 
-    [MenuItem("Tools/Read file")]
+    //[MenuItem("Tools/Read file")]
     public void ReadString(string answer, string index)
     {
-        string path = "Assets/TQGAssets/Resources/ELDragAndDrop.txt";
-        StreamReader reader = new StreamReader(path);
-        if (reader.ReadToEnd().ToString().Contains(answer))
+        TextAsset ELDragAndDrop = (TextAsset)Resources.Load("ELDragAndDrop");
+        if (ELDragAndDrop.text.Contains(answer))
         {
             Sprite sprite = Resources.Load("New Folder/Buttons/correct", typeof(Sprite)) as Sprite;
             GameObject.Find("DragAndDropObject/ButtonAnswer" + index).GetComponent<Image>().sprite = sprite;
@@ -362,7 +307,6 @@ public class Slots : MonoBehaviour, IDropHandler
             GameObject.Find("DragAndDropObject/ButtonAnswer" + index).GetComponent<Image>().sprite = sprite;
             PlayerPrefs.SetString("IsDragCorrect", "F");
         }
-        reader.Close();
         String[] answerArray = answer.ToString().Split(new string[] { " --- " }, StringSplitOptions.None);
         if (answerArray[0].Contains("-"))
         {
@@ -375,7 +319,7 @@ public class Slots : MonoBehaviour, IDropHandler
 
         int getDragAndDropCount = PlayerPrefs.GetInt("DragAndDropCount");
         string getIsDragCorrect = PlayerPrefs.GetString("IsDragCorrect");
-        PlayerPrefs.SetInt("DragAndDropCount", getDragAndDropCount+1);
+        PlayerPrefs.SetInt("DragAndDropCount", getDragAndDropCount + 1);
         getDragAndDropCount = PlayerPrefs.GetInt("DragAndDropCount");
         if (getDragAndDropCount == 4)
         {
@@ -384,8 +328,8 @@ public class Slots : MonoBehaviour, IDropHandler
                 Debug.Log("Correct all dasdasdasdas");
 
                 int dragAndDropScore = PlayerPrefs.GetInt("DragAndDropScore");
-                PlayerPrefs.SetInt("DragAndDropScore", dragAndDropScore+1);
-                GameObject.Find("ScoreText").GetComponent<Text>().text = "Score: " + (dragAndDropScore+1);
+                PlayerPrefs.SetInt("DragAndDropScore", dragAndDropScore + 1);
+                GameObject.Find("ScoreText").GetComponent<Text>().text = "Score: " + (dragAndDropScore + 1);
                 //players[currentPlayer].score = Mathf.Lerp(players[currentPlayer].score, players[currentPlayer].scoreCount, Time.deltaTime * 10);
                 //players[currentPlayer].score = Mathf.CeilToInt(players[currentPlayer].score);
                 print(players[currentPlayer].score + " --- " + players[currentPlayer].scoreCount);
