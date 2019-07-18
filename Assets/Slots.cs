@@ -181,7 +181,7 @@ public class Slots : MonoBehaviour, IDropHandler
     {
         currentCategory = PlayerPrefs.GetString("Category");
 
-        if (PlayerPrefs.GetInt("DragAndDropCurrentCount") <= 2)
+        if (PlayerPrefs.GetInt("DragAndDropCurrentCount") <= PlayerPrefs.GetInt("DragAndDropLimit"))
         {
             if (soundSource && soundQuestion) soundSource.GetComponent<AudioSource>().PlayOneShot(soundQuestion);
 
@@ -229,7 +229,7 @@ public class Slots : MonoBehaviour, IDropHandler
         else
         {
             if ((PlayerPrefs.GetInt("DragAndDropScore") >= 7 && currentCategory.ToString().ToLower().Contains("level 1")) ||
-                (PlayerPrefs.GetInt("DragAndDropScore") >= 1 && currentCategory.ToString().ToLower().Contains("level 2")) ||
+                (PlayerPrefs.GetInt("DragAndDropScore") >= 7 && currentCategory.ToString().ToLower().Contains("level 2")) ||
                 (PlayerPrefs.GetInt("DragAndDropScore") >= 17))
             {
                 StartCoroutine(Victory(0));
@@ -265,25 +265,37 @@ public class Slots : MonoBehaviour, IDropHandler
             //Show the victory screen
             victoryCanvas.gameObject.SetActive(true);
 
+            if ((PlayerPrefs.GetInt("DragAndDropLimit") == 10 && PlayerPrefs.GetInt("DragAndDropScore") == 10) ||
+                (PlayerPrefs.GetInt("DragAndDropLimit") == 20 && PlayerPrefs.GetInt("DragAndDropScore") == 20))
+            {
+                // 3 stars
+                victoryCanvas.Find("TextTitle").GetComponent<Text>().text = "PERFECT!";
+                GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
+                yield return new WaitForSeconds(1);
+                GameObject.Find("StarsContainer/Star 2/StarCollected").gameObject.SetActive(true);
+                yield return new WaitForSeconds(1);
+                GameObject.Find("StarsContainer/Star 3/StarCollected").gameObject.SetActive(true);
+                yield return new WaitForSeconds(1);
+            }
+            else if ((PlayerPrefs.GetInt("DragAndDropLimit") == 10 && (PlayerPrefs.GetInt("DragAndDropScore") <= 9 && PlayerPrefs.GetInt("DragAndDropScore") >= 7)) ||
+                    (PlayerPrefs.GetInt("DragAndDropLimit") == 20 && (PlayerPrefs.GetInt("DragAndDropScore") <= 19 && PlayerPrefs.GetInt("DragAndDropScore") >= 17)))
+            {
+                // 2 stars
+                GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
+                yield return new WaitForSeconds(1);
+                GameObject.Find("StarsContainer/Star 2/StarCollected").gameObject.SetActive(true);
+                yield return new WaitForSeconds(1);
+            }
+            else
+            {
+                // 1 stars
+                GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
+                yield return new WaitForSeconds(1);
+            }
+
             // If we have a TextScore and TextHighScore objects, then we are using the single player victory canvas
             if (victoryCanvas.Find("ScoreTexts/TextScore") && victoryCanvas.Find("ScoreTexts/TextHighScore"))
             {
-                if ((PlayerPrefs.GetInt("DragAndDropLimit") == 10 && PlayerPrefs.GetInt("DragAndDropScore") == 10) ||
-                    (PlayerPrefs.GetInt("DragAndDropLimit") == 20 && PlayerPrefs.GetInt("DragAndDropScore") == 20))
-                {
-                    // 3 stars
-                    victoryCanvas.Find("TextTitle").GetComponent<Text>().text = "PERFECT!";
-                }
-                else if ((PlayerPrefs.GetInt("DragAndDropLimit") == 10 && (PlayerPrefs.GetInt("DragAndDropScore") <= 9 && PlayerPrefs.GetInt("DragAndDropScore") <= 7)) ||
-                        (PlayerPrefs.GetInt("DragAndDropLimit") == 20 && (PlayerPrefs.GetInt("DragAndDropScore") <= 19 && PlayerPrefs.GetInt("DragAndDropScore") <= 17)))
-                {
-                    // 2 stars
-                }
-                else
-                {
-                    // 1 stars
-                }
-
                 //Write the score text, if it exists
                 victoryCanvas.Find("ScoreTexts/TextScore").GetComponent<Text>().text += "YOUR SCORE IS \n" + PlayerPrefs.GetInt("DragAndDropScore").ToString() + " of " + PlayerPrefs.GetInt("DragAndDropLimit");
 
@@ -407,6 +419,13 @@ public class Slots : MonoBehaviour, IDropHandler
         {
             //Show the game over screen
             gameOverCanvas.gameObject.SetActive(true);
+
+            if (PlayerPrefs.GetInt("DragAndDropScore") != 0)
+            {
+                // 1 stars
+                GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
+                yield return new WaitForSeconds(1);
+            }
 
             //Write the score text, if it exists
             if (gameOverCanvas.Find("ScoreTexts/TextScore")) gameOverCanvas.Find("ScoreTexts/TextScore").GetComponent<Text>().text += "YOUR SCORE IS \n" + PlayerPrefs.GetInt("DragAndDropScore").ToString() + " of " + PlayerPrefs.GetInt("DragAndDropLimit");

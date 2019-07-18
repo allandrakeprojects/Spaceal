@@ -426,6 +426,12 @@ namespace TriviaQuizGame
             PlayerPrefs.SetInt("DragAndDropLimit", questionLimit);
             PlayerPrefs.SetString("Category", currentCategory);
 
+            // asdasdasdasdasd
+            //GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
+
+            //StarsManager sn = gameObject.GetComponent<StarsManager>();
+            //sn.StarCollected();
+
             // adpd update
             //Debug.Log("Current Category: " + currentCategory + "\n" +
             //          "Question Limit: " + questionLimit);
@@ -726,6 +732,17 @@ namespace TriviaQuizGame
                 // If we asked enough questions, move on to the next bonus group
                 if (questionCount >= questionsPerGroup)
                 {
+                    // adpd update
+                    if (questions[currentQuestion].question.ToString().Contains("Drag"))
+                    {
+                        // asdasdasd
+                        questionObject.Find("DragAndDropObject").gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        questionObject.Find("DragAndDropObject").gameObject.SetActive(false);
+                    }
+
                     //Debug.Log(questions.Length);
                     // Holding the current bonus to compare to the next bonus
                     float tempBonus = questions[currentQuestion].bonus;
@@ -741,17 +758,6 @@ namespace TriviaQuizGame
 
                         // Check if the question has already been used, and if so, ask another question instead
                         if (dontRepeatQuestions == true && PlayerPrefs.HasKey(questions[currentQuestion].question)) questionIsUsed = true;
-                    }
-
-                    // adpd update
-                    if (questions[currentQuestion].question.ToString().Contains("Drag"))
-                    {
-                        // asdasdasd
-                        questionObject.Find("DragAndDropObject").gameObject.SetActive(true);
-                    }
-                    else
-                    {
-                        questionObject.Find("DragAndDropObject").gameObject.SetActive(false);
                     }
 
                     // Animate the question
@@ -1747,63 +1753,6 @@ namespace TriviaQuizGame
         }
 
         /// <summary>
-        /// Runs the game over event and shows the game over screen
-        /// </summary>
-        IEnumerator GameOver(float delay)
-        {
-            isGameOver = true;
-
-            // Calculate the quiz duration
-            playTime = DateTime.Now - startTime;
-
-            yield return new WaitForSeconds(delay);
-
-            //Show the game over screen
-            if (gameOverCanvas)
-            {
-                //Show the game over screen
-                gameOverCanvas.gameObject.SetActive(true);
-
-                //Write the score text, if it exists
-                if (gameOverCanvas.Find("ScoreTexts/TextScore")) gameOverCanvas.Find("ScoreTexts/TextScore").GetComponent<Text>().text += "YOUR SCORE IS \n" + players[currentPlayer].score.ToString() + " of " + questionLimit;
-
-                //Check if we got a high score
-                if (players[currentPlayer].score > highScore)
-                {
-                    highScore = players[currentPlayer].score;
-
-                    //Register the new high score
-#if UNITY_5_3 || UNITY_5_3_OR_NEWER
-                    PlayerPrefs.SetFloat(SceneManager.GetActiveScene().name + "HighScore", players[currentPlayer].score);
-#else
-                    PlayerPrefs.SetFloat(Application.loadedLevelName + "HighScore", players[currentPlayer].score);
-#endif
-                }
-
-                if ((questionLimit == 10 && players[currentPlayer].score == 6) ||
-                    (questionLimit == 20 && players[currentPlayer].score == 16))
-                {
-                    gameOverCanvas.Find("TextTitle").GetComponent<Text>().text = "YOU CAN DO IT!";
-                }
-
-                //Write the high sscore text
-                int passingScore = 0;
-                if (questionLimit == 10)
-                {
-                    passingScore = 7;
-                }
-                else if (questionLimit == 20)
-                {
-                    passingScore = 17;
-                }
-                gameOverCanvas.Find("ScoreTexts/TextHighScore").GetComponent<Text>().text += "Passing score is " + passingScore;
-
-                //If there is a source and a sound, play it from the source
-                if (soundSource && soundGameOver) soundSource.GetComponent<AudioSource>().PlayOneShot(soundGameOver);
-            }
-        }
-
-        /// <summary>
         /// Runs the victory event and shows the victory screen
         /// </summary>
         IEnumerator Victory(float delay)
@@ -1831,24 +1780,37 @@ namespace TriviaQuizGame
                 //Show the victory screen
                 victoryCanvas.gameObject.SetActive(true);
 
+                if ((questionLimit == 10 && players[currentPlayer].score == 10) ||
+                    (questionLimit == 20 && players[currentPlayer].score == 20))
+                {
+                    // 3 stars
+                    victoryCanvas.Find("TextTitle").GetComponent<Text>().text = "PERFECT!";
+                    GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
+                    yield return new WaitForSeconds(1);
+                    GameObject.Find("StarsContainer/Star 2/StarCollected").gameObject.SetActive(true);
+                    yield return new WaitForSeconds(1);
+                    GameObject.Find("StarsContainer/Star 3/StarCollected").gameObject.SetActive(true);
+                    yield return new WaitForSeconds(1);
+                }
+                else if ((questionLimit == 10 && (players[currentPlayer].score <= 9 && players[currentPlayer].score >= 7)) ||
+                        (questionLimit == 20 && (players[currentPlayer].score <= 19 && players[currentPlayer].score >= 17)))
+                {
+                    // 2 stars
+                    GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
+                    yield return new WaitForSeconds(1);
+                    GameObject.Find("StarsContainer/Star 2/StarCollected").gameObject.SetActive(true);
+                    yield return new WaitForSeconds(1);
+                }
+                else
+                {
+                    // 1 stars
+                    GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
+                    yield return new WaitForSeconds(1);
+                }
+
                 // If we have a TextScore and TextHighScore objects, then we are using the single player victory canvas
                 if (victoryCanvas.Find("ScoreTexts/TextScore") && victoryCanvas.Find("ScoreTexts/TextHighScore"))
                 {
-                    if ((questionLimit == 10 && players[currentPlayer].score == 10) ||
-                        (questionLimit == 20 && players[currentPlayer].score == 20))
-                    {
-                        // 3 stars
-                        victoryCanvas.Find("TextTitle").GetComponent<Text>().text = "PERFECT!";
-                    }
-                    else if ((questionLimit == 10 && (players[currentPlayer].score <= 9 && players[currentPlayer].score <= 7)) ||
-                            (questionLimit == 20 && (players[currentPlayer].score <= 19 && players[currentPlayer].score <= 17)))
-                    {
-                        // 2 stars
-                    }
-                    else
-                    {
-                        // 1 stars
-                    }
 
                     //Write the score text, if it exists
                     victoryCanvas.Find("ScoreTexts/TextScore").GetComponent<Text>().text += "YOUR SCORE IS \n" + players[currentPlayer].score.ToString() + " of " + questionLimit;
@@ -1956,6 +1918,70 @@ namespace TriviaQuizGame
 
                 //If there is a source and a sound, play it from the source
                 if (soundSource && soundVictory) soundSource.GetComponent<AudioSource>().PlayOneShot(soundVictory);
+            }
+        }
+
+        /// <summary>
+        /// Runs the game over event and shows the game over screen
+        /// </summary>
+        IEnumerator GameOver(float delay)
+        {
+            isGameOver = true;
+
+            // Calculate the quiz duration
+            playTime = DateTime.Now - startTime;
+
+            yield return new WaitForSeconds(delay);
+
+            //Show the game over screen
+            if (gameOverCanvas)
+            {
+                //Show the game over screen
+                gameOverCanvas.gameObject.SetActive(true);
+
+                if (players[currentPlayer].score != 0)
+                {
+                    // 1 stars
+                    GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
+                    yield return new WaitForSeconds(1);
+                }
+
+                //Write the score text, if it exists
+                if (gameOverCanvas.Find("ScoreTexts/TextScore")) gameOverCanvas.Find("ScoreTexts/TextScore").GetComponent<Text>().text += "YOUR SCORE IS \n" + players[currentPlayer].score.ToString() + " of " + questionLimit;
+
+                //Check if we got a high score
+                if (players[currentPlayer].score > highScore)
+                {
+                    highScore = players[currentPlayer].score;
+
+                    //Register the new high score
+#if UNITY_5_3 || UNITY_5_3_OR_NEWER
+                    PlayerPrefs.SetFloat(SceneManager.GetActiveScene().name + "HighScore", players[currentPlayer].score);
+#else
+                    PlayerPrefs.SetFloat(Application.loadedLevelName + "HighScore", players[currentPlayer].score);
+#endif
+                }
+
+                if ((questionLimit == 10 && players[currentPlayer].score == 6) ||
+                    (questionLimit == 20 && players[currentPlayer].score == 16))
+                {
+                    gameOverCanvas.Find("TextTitle").GetComponent<Text>().text = "YOU CAN DO IT!";
+                }
+
+                //Write the high sscore text
+                int passingScore = 0;
+                if (questionLimit == 10)
+                {
+                    passingScore = 7;
+                }
+                else if (questionLimit == 20)
+                {
+                    passingScore = 17;
+                }
+                gameOverCanvas.Find("ScoreTexts/TextHighScore").GetComponent<Text>().text += "Passing score is " + passingScore;
+
+                //If there is a source and a sound, play it from the source
+                if (soundSource && soundGameOver) soundSource.GetComponent<AudioSource>().PlayOneShot(soundGameOver);
             }
         }
 
