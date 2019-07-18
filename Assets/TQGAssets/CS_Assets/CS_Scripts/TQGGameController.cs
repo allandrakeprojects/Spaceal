@@ -649,11 +649,20 @@ namespace TriviaQuizGame
                     answers += questions[i].answers[index].answer + " || ";
                 }
 
-                if (questions[i].question.ToLower().Contains("drag"))
+                if (currentCategory.ToLower().Contains("level 3"))
                 {
                     int asd = i + 1;
                     PlayerPrefs.SetString("DragAndDrop" + asd, questions[i].question + " --- " + answers);
                     answers = "";
+                }
+                else
+                {
+                    if (questions[i].question.ToLower().Contains("drag"))
+                    {
+                        int asd = i + 1;
+                        PlayerPrefs.SetString("DragAndDrop" + asd, questions[i].question + " --- " + answers);
+                        answers = "";
+                    }
                 }
             }
 
@@ -847,7 +856,8 @@ namespace TriviaQuizGame
                         questionObject.Find("Text").GetComponent<Text>().text = questions[currentQuestion].question;
 
                         // Record this question in PlayerPrefs so that we know it has been asked
-                        PlayerPrefs.SetInt(questions[currentQuestion].question, 1);
+                        // comment
+                        //PlayerPrefs.SetInt(questions[currentQuestion].question, 1);
 
                         // Set the time for this question, unless we have a global timer, in which case ignore the local time of the question
                         if (globalTime <= 0) timeLeft = questions[currentQuestion].time;
@@ -1008,7 +1018,7 @@ namespace TriviaQuizGame
                             }
 
                             // Select each button as it becomes enabled. This action solves a bug that appeared in Unity 5.5 where buttons stay highlighted from the previous question.
-                            answerObjects[index].GetComponent<Button>().Select();
+                            //answerObjects[index].GetComponent<Button>().Select();
 
                             // Display the text of the answer
                             if (index < questions[currentQuestion].answers.Length) answerObjects[index].Find("Text").GetComponent<Text>().text = questions[currentQuestion].answers[index].answer;
@@ -1939,6 +1949,12 @@ namespace TriviaQuizGame
                 //Show the game over screen
                 gameOverCanvas.gameObject.SetActive(true);
 
+                if ((questionLimit == 10 && players[currentPlayer].score == 6) ||
+                    (questionLimit == 20 && players[currentPlayer].score == 16))
+                {
+                    gameOverCanvas.Find("TextTitle").GetComponent<Text>().text = "YOU CAN DO IT!";
+                }
+
                 if (players[currentPlayer].score != 0)
                 {
                     // 1 stars
@@ -1960,12 +1976,6 @@ namespace TriviaQuizGame
 #else
                     PlayerPrefs.SetFloat(Application.loadedLevelName + "HighScore", players[currentPlayer].score);
 #endif
-                }
-
-                if ((questionLimit == 10 && players[currentPlayer].score == 6) ||
-                    (questionLimit == 20 && players[currentPlayer].score == 16))
-                {
-                    gameOverCanvas.Find("TextTitle").GetComponent<Text>().text = "YOU CAN DO IT!";
                 }
 
                 //Write the high sscore text

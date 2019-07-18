@@ -188,42 +188,49 @@ public class Slots : MonoBehaviour, IDropHandler
             GameObject.Find("QuestionsCount").GetComponent<Text>().text = PlayerPrefs.GetInt("DragAndDropCurrentCount") + " of " + PlayerPrefs.GetInt("DragAndDropLimit") + "\nQuestions";
             // Next question
             string questionAnswer = PlayerPrefs.GetString("DragAndDrop" + PlayerPrefs.GetInt("DragAndDropCurrentCount"));
-            String[] questionAnswerArray = questionAnswer.ToString().Replace("Drag the answer to complete the question.", "").Split(new string[] { " --- " }, StringSplitOptions.None);
-
-            string question = questionAnswerArray[0];
-            string answer = questionAnswerArray[1];
-            String[] questionArray = question.ToString().Split(new string[] { " || " }, StringSplitOptions.None);
-            String[] answerArray = answer.ToString().Split(new string[] { " || " }, StringSplitOptions.None);
-            List<int> randomNumbers = new List<int>();
-            for (int i = 0; i < 4; i++)
+            if (questionAnswer.ToLower().Contains("drag"))
             {
-                int number;
+                String[] questionAnswerArray = questionAnswer.ToString().Replace("Drag the answer to complete the question.", "").Split(new string[] { " --- " }, StringSplitOptions.None);
 
-                do number = rand.Next(0, 4);
-                while (randomNumbers.Contains(number));
-
-                randomNumbers.Add(number);
-
-                Sprite sprite = Resources.Load("New Folder/Level/DragAndDrop/" + questionArray[i].Trim(), typeof(Sprite)) as Sprite;
-                if (sprite)
+                string question = questionAnswerArray[0];
+                string answer = questionAnswerArray[1];
+                String[] questionArray = question.ToString().Split(new string[] { " || " }, StringSplitOptions.None);
+                String[] answerArray = answer.ToString().Split(new string[] { " || " }, StringSplitOptions.None);
+                List<int> randomNumbers = new List<int>();
+                for (int i = 0; i < 4; i++)
                 {
-                    GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponent<Image>().sprite = sprite;
-                    GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = "\n\n\n\n\n\n\n\n\n" + questionArray[i].Trim();
+                    int number;
 
+                    do number = rand.Next(0, 4);
+                    while (randomNumbers.Contains(number));
+
+                    randomNumbers.Add(number);
+
+                    Sprite sprite = Resources.Load("New Folder/Level/DragAndDrop/" + questionArray[i].Trim(), typeof(Sprite)) as Sprite;
+                    if (sprite)
+                    {
+                        GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponent<Image>().sprite = sprite;
+                        GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = "\n\n\n\n\n\n\n\n\n" + questionArray[i].Trim();
+
+                    }
+                    else
+                    {
+                        Sprite sprite_ = Resources.Load("New Folder/Buttons/buttonblue", typeof(Sprite)) as Sprite;
+                        GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponent<Image>().sprite = sprite_;
+                        GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = questionArray[i].Trim();
+                    }
+
+                    GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Image>().enabled = true;
+                    GameObject.Find("Answers/ButtonAnswer" + number + "/Text").GetComponent<Text>().text = answerArray[i].Trim();
+
+                    // Play the animation
+                    GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Animation>().AddClip(animationShow, animationShow.name);
+                    GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Animation>().Play(animationShow.name);
                 }
-                else
-                {
-                    Sprite sprite_ = Resources.Load("New Folder/Buttons/buttonblue", typeof(Sprite)) as Sprite;
-                    GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponent<Image>().sprite = sprite_;
-                    GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = questionArray[i].Trim();
-                }
+            }
+            else
+            {
 
-                GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Image>().enabled = true;
-                GameObject.Find("Answers/ButtonAnswer" + number + "/Text").GetComponent<Text>().text = answerArray[i].Trim();
-
-                // Play the animation
-                GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Animation>().AddClip(animationShow, animationShow.name);
-                GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Animation>().Play(animationShow.name);
             }
         }
         else
@@ -420,6 +427,12 @@ public class Slots : MonoBehaviour, IDropHandler
             //Show the game over screen
             gameOverCanvas.gameObject.SetActive(true);
 
+            if ((PlayerPrefs.GetInt("DragAndDropLimit") == 10 && PlayerPrefs.GetInt("DragAndDropScore") == 6) ||
+                (PlayerPrefs.GetInt("DragAndDropLimit") == 20 && PlayerPrefs.GetInt("DragAndDropScore") == 16))
+            {
+                gameOverCanvas.Find("TextTitle").GetComponent<Text>().text = "YOU CAN DO IT!";
+            }
+
             if (PlayerPrefs.GetInt("DragAndDropScore") != 0)
             {
                 // 1 stars
@@ -442,12 +455,6 @@ public class Slots : MonoBehaviour, IDropHandler
 //                    PlayerPrefs.SetFloat(Application.loadedLevelName + "HighScore", PlayerPrefs.GetInt("DragAndDropScore"));
 //#endif
 //            }
-
-            if ((PlayerPrefs.GetInt("DragAndDropLimit") == 10 && PlayerPrefs.GetInt("DragAndDropScore") == 6) ||
-                (PlayerPrefs.GetInt("DragAndDropLimit") == 20 && PlayerPrefs.GetInt("DragAndDropScore") == 16))
-            {
-                gameOverCanvas.Find("TextTitle").GetComponent<Text>().text = "YOU CAN DO IT!";
-            }
 
             //Write the high sscore text
             int passingScore = 0;
