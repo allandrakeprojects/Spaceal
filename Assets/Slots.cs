@@ -181,7 +181,8 @@ public class Slots : MonoBehaviour, IDropHandler
     {
         currentCategory = PlayerPrefs.GetString("Category");
 
-        if (PlayerPrefs.GetInt("DragAndDropCurrentCount") <= PlayerPrefs.GetInt("DragAndDropLimit"))
+        // dev PlayerPrefs.GetInt("DragAndDropLimit")
+        if (PlayerPrefs.GetInt("DragAndDropCurrentCount") <= 2)
         {
             if (soundSource && soundQuestion) soundSource.GetComponent<AudioSource>().PlayOneShot(soundQuestion);
 

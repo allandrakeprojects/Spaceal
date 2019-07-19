@@ -1794,6 +1794,7 @@ namespace TriviaQuizGame
                     (questionLimit == 20 && players[currentPlayer].score == 20))
                 {
                     // 3 stars
+                    print(3);
                     victoryCanvas.Find("TextTitle").GetComponent<Text>().text = "PERFECT!";
                     GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
                     yield return new WaitForSeconds(1);
@@ -1806,6 +1807,7 @@ namespace TriviaQuizGame
                         (questionLimit == 20 && (players[currentPlayer].score <= 19 && players[currentPlayer].score >= 17)))
                 {
                     // 2 stars
+                    print(2);
                     GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
                     yield return new WaitForSeconds(1);
                     GameObject.Find("StarsContainer/Star 2/StarCollected").gameObject.SetActive(true);
@@ -1814,6 +1816,7 @@ namespace TriviaQuizGame
                 else
                 {
                     // 1 stars
+                    print(1);
                     GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
                     yield return new WaitForSeconds(1);
                 }
@@ -1959,7 +1962,7 @@ namespace TriviaQuizGame
                 {
                     // 1 stars
                     GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
-                    yield return new WaitForSeconds(1);
+                   yield return new WaitForSeconds(1);
                 }
 
                 //Write the score text, if it exists
@@ -1993,6 +1996,8 @@ namespace TriviaQuizGame
                 //If there is a source and a sound, play it from the source
                 if (soundSource && soundGameOver) soundSource.GetComponent<AudioSource>().PlayOneShot(soundGameOver);
             }
+
+            GameObject.Find("GameControllerCategoryGrid").gameObject.SetActive(false);
         }
 
         /// <summary>
