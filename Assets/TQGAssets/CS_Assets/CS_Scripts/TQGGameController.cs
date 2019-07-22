@@ -1784,6 +1784,12 @@ namespace TriviaQuizGame
             }
             yield return new WaitForSeconds(delay);
 
+            GameObject.Find("GameControllerCategoryGrid/Question").gameObject.SetActive(false);
+            GameObject.Find("GameControllerCategoryGrid/ScoreText").gameObject.SetActive(false);
+            GameObject.Find("GameControllerCategoryGrid/TimerIcon").gameObject.SetActive(false);
+            GameObject.Find("GameControllerCategoryGrid/QuestionsCount").gameObject.SetActive(false);
+            GameObject.Find("GameControllerCategoryGrid/Options").gameObject.SetActive(false);
+
             //Show the game over screen
             if (victoryCanvas)
             {
