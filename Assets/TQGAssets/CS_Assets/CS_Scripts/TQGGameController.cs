@@ -9,12 +9,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System;
-using System.Text;
 using System.Xml;
-using System.IO;
 using TriviaQuizGame.Types;
 using System.Collections.Generic;
-using UnityEditor;
 
 namespace TriviaQuizGame
 {
@@ -640,6 +637,9 @@ namespace TriviaQuizGame
                 questionsPerGroup = questions.Length;
             }
 
+            string dragAndDropQuestions = "";
+            string multipleChoiceQuestions = "";
+
             string answers = "";
             for (int i = 0; i < questions.Length; i++)
             {
@@ -649,10 +649,18 @@ namespace TriviaQuizGame
                     answers += questions[i].answers[index].answer + " || ";
                 }
 
+
                 if (currentCategory.ToLower().Contains("level 3"))
                 {
-                    int asd = i + 1;
-                    PlayerPrefs.SetString("DragAndDrop" + asd, questions[i].question + " --- " + answers);
+                    if (questions[i].question.ToLower().Contains("drag"))
+                    {
+                        dragAndDropQuestions += questions[i].question + " --- " + answers + "\n";
+                    }
+                    else
+                    {
+                        multipleChoiceQuestions += questions[i].question + " --- " + answers + "\n";
+                    }
+
                     answers = "";
                 }
                 else
@@ -665,6 +673,30 @@ namespace TriviaQuizGame
                     }
                 }
             }
+
+            string combination = multipleChoiceQuestions + dragAndDropQuestions;
+
+            String[] combinationArray = combination.ToString().Split(new string[] { "\n" }, StringSplitOptions.None);
+
+            for (index = 0; index < combinationArray.Length; index++)
+            {
+                if (combinationArray[index].Length > 0)
+                {
+                    int asd = index + 1;
+                    PlayerPrefs.SetString("DragAndDrop" + asd, combinationArray[index]);
+                    
+                    // Hold the question in a temporary variable
+                    Question tempQuestion = questions[index];
+
+                    // Assign a random question from the list
+                    questions[index] = questions[index];
+
+                    // Assign the temporary question to the random question we chose
+                    questions[index] = tempQuestion;
+                }
+            }
+
+            print(combination);
 
             PlayerPrefs.SetInt("DragAndDropCurrentCount", 1);
         }

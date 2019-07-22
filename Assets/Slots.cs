@@ -182,7 +182,7 @@ public class Slots : MonoBehaviour, IDropHandler
         currentCategory = PlayerPrefs.GetString("Category");
 
         // dev PlayerPrefs.GetInt("DragAndDropLimit")
-        if (PlayerPrefs.GetInt("DragAndDropCurrentCount") <= 2)
+        if (PlayerPrefs.GetInt("DragAndDropCurrentCount") <= PlayerPrefs.GetInt("DragAndDropLimit"))
         {
             if (soundSource && soundQuestion) soundSource.GetComponent<AudioSource>().PlayOneShot(soundQuestion);
 
@@ -231,7 +231,10 @@ public class Slots : MonoBehaviour, IDropHandler
             }
             else
             {
-
+                print(questions.Length);
+                //StartCoroutine(Camera.main.GetComponent<TQGGameController>().AskQuestion(false));
+                TQGGameController api = gameObject.AddComponent<TQGGameController>();
+                StartCoroutine(api.AskQuestion(false));
             }
         }
         else
