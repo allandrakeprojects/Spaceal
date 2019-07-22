@@ -9,9 +9,12 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System;
+using System.Text;
 using System.Xml;
+using System.IO;
 using TriviaQuizGame.Types;
 using System.Collections.Generic;
+using UnityEditor;
 
 namespace TriviaQuizGame
 {
@@ -636,10 +639,8 @@ namespace TriviaQuizGame
                 // If we are not sorting by bonus groups, then there is no need to limit the number of questions per group
                 questionsPerGroup = questions.Length;
             }
-
             string dragAndDropQuestions = "";
             string multipleChoiceQuestions = "";
-
             string answers = "";
             for (int i = 0; i < questions.Length; i++)
             {
@@ -649,9 +650,11 @@ namespace TriviaQuizGame
                     answers += questions[i].answers[index].answer + " || ";
                 }
 
-
                 if (currentCategory.ToLower().Contains("level 3"))
                 {
+                    //int asd = i + 1;
+                    //PlayerPrefs.SetString("DragAndDrop" + asd, questions[i].question + " --- " + answers);
+                    //answers = "";
                     if (questions[i].question.ToLower().Contains("drag"))
                     {
                         dragAndDropQuestions += questions[i].question + " --- " + answers + "\n";
@@ -660,7 +663,6 @@ namespace TriviaQuizGame
                     {
                         multipleChoiceQuestions += questions[i].question + " --- " + answers + "\n";
                     }
-
                     answers = "";
                 }
                 else
@@ -673,10 +675,9 @@ namespace TriviaQuizGame
                     }
                 }
             }
-
             string combination = multipleChoiceQuestions + dragAndDropQuestions;
 
-            String[] combinationArray = combination.ToString().Split(new string[] { "\n" }, StringSplitOptions.None);
+            String[] combinationArray = multipleChoiceQuestions.ToString().Split(new string[] { "\n" }, StringSplitOptions.None);
 
             for (index = 0; index < combinationArray.Length; index++)
             {
@@ -684,19 +685,8 @@ namespace TriviaQuizGame
                 {
                     int asd = index + 1;
                     PlayerPrefs.SetString("DragAndDrop" + asd, combinationArray[index]);
-                    
-                    // Hold the question in a temporary variable
-                    Question tempQuestion = questions[index];
-
-                    // Assign a random question from the list
-                    questions[index] = questions[index];
-
-                    // Assign the temporary question to the random question we chose
-                    questions[index] = tempQuestion;
                 }
             }
-
-            print(combination);
 
             PlayerPrefs.SetInt("DragAndDropCurrentCount", 1);
         }
@@ -710,17 +700,19 @@ namespace TriviaQuizGame
             // Go through all the questions and shuffle them
             for (index = 0; index < questions.Length; index++)
             {
-                // Hold the question in a temporary variable
-                Question tempQuestion = questions[index];
-
                 // Choose a random index from the question list
                 int randomIndex = UnityEngine.Random.Range(index, questions.Length);
+                if (!questions[randomIndex].question.ToLower().Contains("drag"))
+                {
+                    // Hold the question in a temporary variable
+                    Question tempQuestion = questions[index];
 
-                // Assign a random question from the list
-                questions[index] = questions[randomIndex];
+                    // Assign a random question from the list
+                    questions[index] = questions[randomIndex];
 
-                // Assign the temporary question to the random question we chose
-                questions[randomIndex] = tempQuestion;
+                    // Assign the temporary question to the random question we chose
+                    questions[randomIndex] = tempQuestion;
+                }
             }
 
             return questions;
@@ -843,7 +835,14 @@ namespace TriviaQuizGame
                     int currentQuestionText = currentQuestion+1;
                     if (currentQuestionText <= questionLimit)
                     {
-                        GameObject.Find("QuestionsCount").GetComponent<Text>().text = currentQuestionText + " of " + questionLimit + "\nQuestions";
+                        if (currentCategory.ToLower().Contains("level 3"))
+                        {
+                            GameObject.Find("QuestionsCount").GetComponent<Text>().text = PlayerPrefs.GetInt("DragAndDropCurrentCount") + " of " + PlayerPrefs.GetInt("DragAndDropLimit") + "\nQuestions";
+                        }
+                        else
+                        {
+                            GameObject.Find("QuestionsCount").GetComponent<Text>().text = currentQuestionText + " of " + questionLimit + "\nQuestions";
+                        }
                     }
 
                     // If we got to the last question in the quiz, check if there are unused questions we can put in the quiz again
@@ -1147,6 +1146,7 @@ namespace TriviaQuizGame
                                 Sprite sprite = Resources.Load("New Folder/Level/DragAndDrop/" + questionTitleArray[count].Trim(), typeof(Sprite)) as Sprite;
                                 if (sprite)
                                 {
+                                    GameObject.Find("DragAndDropObject/ButtonAnswer" + number).gameObject.SetActive(true);
                                     GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponent<Image>().sprite = sprite;
                                     questionObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = "\n\n\n\n\n\n\n\n\n" + questionTitleArray[count].Trim();
 
@@ -1233,6 +1233,12 @@ namespace TriviaQuizGame
                 else
                 {
                     // Ask the next question
+                    if (currentCategory.ToLower().Contains("level 3"))
+                    {
+                        int getDragAndDropCurrentCount = PlayerPrefs.GetInt("DragAndDropCurrentCount", 0);
+                        PlayerPrefs.SetInt("DragAndDropCurrentCount", getDragAndDropCurrentCount + 1);
+                    }
+
                     StartCoroutine(AskQuestion(true));
                 }
 
@@ -1595,6 +1601,13 @@ namespace TriviaQuizGame
 
             // Deselect the currently selected answer
             eventSystem.SetSelectedGameObject(null);
+
+            // Ask the next question
+            if (currentCategory.ToLower().Contains("level 3"))
+            {
+                int getDragAndDropCurrentCount = PlayerPrefs.GetInt("DragAndDropCurrentCount", 0);
+                PlayerPrefs.SetInt("DragAndDropCurrentCount", getDragAndDropCurrentCount + 1);
+            }
 
             // Ask the next question
             StartCoroutine(AskQuestion(true));

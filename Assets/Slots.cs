@@ -189,15 +189,15 @@ public class Slots : MonoBehaviour, IDropHandler
             GameObject.Find("QuestionsCount").GetComponent<Text>().text = PlayerPrefs.GetInt("DragAndDropCurrentCount") + " of " + PlayerPrefs.GetInt("DragAndDropLimit") + "\nQuestions";
             // Next question
             string questionAnswer = PlayerPrefs.GetString("DragAndDrop" + PlayerPrefs.GetInt("DragAndDropCurrentCount"));
+            String[] questionAnswerArray = questionAnswer.ToString().Replace("Drag the answer to complete the question.", "").Split(new string[] { " --- " }, StringSplitOptions.None);
+            string question = questionAnswerArray[0];
+            string answer = questionAnswerArray[1];
+            String[] questionArray = question.ToString().Split(new string[] { " || " }, StringSplitOptions.None);
+            String[] answerArray = answer.ToString().Split(new string[] { " || " }, StringSplitOptions.None);
+            List<int> randomNumbers = new List<int>();
             if (questionAnswer.ToLower().Contains("drag"))
             {
-                String[] questionAnswerArray = questionAnswer.ToString().Replace("Drag the answer to complete the question.", "").Split(new string[] { " --- " }, StringSplitOptions.None);
-
-                string question = questionAnswerArray[0];
-                string answer = questionAnswerArray[1];
-                String[] questionArray = question.ToString().Split(new string[] { " || " }, StringSplitOptions.None);
-                String[] answerArray = answer.ToString().Split(new string[] { " || " }, StringSplitOptions.None);
-                List<int> randomNumbers = new List<int>();
+                questionObject.Find("DragAndDropObject").gameObject.SetActive(true);
                 for (int i = 0; i < 4; i++)
                 {
                     int number;
@@ -231,10 +231,40 @@ public class Slots : MonoBehaviour, IDropHandler
             }
             else
             {
-                print(questions.Length);
-                //StartCoroutine(Camera.main.GetComponent<TQGGameController>().AskQuestion(false));
-                TQGGameController api = gameObject.AddComponent<TQGGameController>();
-                StartCoroutine(api.AskQuestion(false));
+                // asdasdasd
+                questionObject.Find("Text").GetComponent<Text>().text = questionArray[0];
+                
+                for (int i = 0; i < (answerArray.Length - 1); i++)
+                {
+                    int number;
+
+                    do number = rand.Next(0, (answerArray.Length - 1));
+                    while (randomNumbers.Contains(number));
+
+                    randomNumbers.Add(number);
+
+                    if (answerArray[i].Trim().Length > 0)
+                    {
+                        GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Image>().enabled = true;
+                        GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Button>().enabled = true;
+                        GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Button>().interactable = true;
+                        GameObject.Find("Answers/ButtonAnswer" + number + "/Text").GetComponent<Text>().text = answerArray[i].Trim();
+                    }
+
+                    Sprite sprite_ = Resources.Load("New Folder/Buttons/buttonblue", typeof(Sprite)) as Sprite;
+                    GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponent<Image>().sprite = sprite_;
+
+                    // Play the animation
+                    GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Animation>().AddClip(animationShow, animationShow.name);
+                    GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Animation>().Play(animationShow.name);
+                }
+
+                if ((answerArray.Length - 1) == 3)
+                {
+                    GameObject.Find("Answers/ButtonAnswer3").gameObject.SetActive(false);
+                }
+
+                questionObject.Find("DragAndDropObject").gameObject.SetActive(false);
             }
         }
         else
@@ -269,6 +299,12 @@ public class Slots : MonoBehaviour, IDropHandler
             currentCategory = null;
         }
         yield return new WaitForSeconds(delay);
+
+        GameObject.Find("GameControllerCategoryGrid/Question").gameObject.SetActive(false);
+        GameObject.Find("GameControllerCategoryGrid/ScoreText").gameObject.SetActive(false);
+        GameObject.Find("GameControllerCategoryGrid/TimerIcon").gameObject.SetActive(false);
+        GameObject.Find("GameControllerCategoryGrid/QuestionsCount").gameObject.SetActive(false);
+        GameObject.Find("GameControllerCategoryGrid/Options").gameObject.SetActive(false);
 
         //Show the game over screen
         if (victoryCanvas)
