@@ -40,6 +40,7 @@ namespace TriviaQuizGame
 		/// </summary>
 		void Start()
 		{
+
 		    // If there is a gamecontroller in the scene, assign it to the variable
 			if ( GameObject.FindGameObjectWithTag("GameController") )    gameController = GameObject.FindGameObjectWithTag("GameController");
 
@@ -90,8 +91,21 @@ namespace TriviaQuizGame
 		/// </summary>
 		void ExecuteLoadLevel()
 		{
-			#if UNITY_5_3 || UNITY_5_3_OR_NEWER
-			SceneManager.LoadScene(levelName);
+            if (levelName == "CS_GameCategoryGrid")
+            {
+                PlayerPrefs.SetString("CURRENT_SUBJECT", "English");
+            }
+            else if (levelName == "CS_GameOnlineXML")
+            {
+                PlayerPrefs.SetString("CURRENT_SUBJECT", "Science");
+            }
+            else if (levelName == "CS_GameOnlineImages")
+            {
+                PlayerPrefs.SetString("CURRENT_SUBJECT", "Math");
+            }
+
+            #if UNITY_5_3 || UNITY_5_3_OR_NEWER
+            SceneManager.LoadScene(levelName);
 			#else
 			Application.LoadLevel(levelName);
 			#endif

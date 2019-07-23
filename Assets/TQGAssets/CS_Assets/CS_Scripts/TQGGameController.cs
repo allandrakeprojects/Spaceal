@@ -8,13 +8,12 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Mono.Data.Sqlite;
 using System;
-using System.Text;
+using System.Data;
 using System.Xml;
-using System.IO;
 using TriviaQuizGame.Types;
 using System.Collections.Generic;
-using UnityEditor;
 
 namespace TriviaQuizGame
 {
@@ -255,6 +254,8 @@ namespace TriviaQuizGame
         /// </summary>
         void Start()
         {
+            conn = "URI=file:" + Application.dataPath + "/Plugins/SpacealDam.s3db"; //Path to database.
+
             // Disable multitouch so that we don't tap two answers at the same time ( prevents multi-answer cheating, thanks to Miguel Paolino for catching this bug )
             Input.multiTouchEnabled = false;
 
@@ -423,10 +424,8 @@ namespace TriviaQuizGame
                 questionLimit = 5;
             }
 
-            print(currentCategory);
-
             PlayerPrefs.SetInt("DragAndDropLimit", questionLimit);
-            PlayerPrefs.SetString("Category", currentCategory);
+            PlayerPrefs.SetString("CURRENT_CATEGORY", currentCategory);
 
             // asdasdasdasdasd
             //GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
@@ -1862,6 +1861,148 @@ namespace TriviaQuizGame
             //if (scoreToVictory > 0 && players[currentPlayer].score >= scoreToVictory) StartCoroutine(Victory(0));
         }
 
+        string CURRENT_LEVEL = "";
+        string CURRENT_TIMESPENT = "";
+        int CURRENT_STARS;
+        string CURRENT_REMARKS = "";
+
+        public void GETSCORE(int stars, string remarks, string timespent)
+        {
+            string level = "";
+            if (PlayerPrefs.GetString("CURRENT_CATEGORY").ToLower().Contains("level 1"))
+            {
+                level = "Level 1";
+            }
+            else if (PlayerPrefs.GetString("CURRENT_CATEGORY").ToLower().Contains("level 2"))
+            {
+                level = "Level 2";
+            }
+            else if (PlayerPrefs.GetString("CURRENT_CATEGORY").ToLower().Contains("level 3"))
+            {
+                level = "Level 3";
+            }
+
+            CURRENT_LEVEL = level;
+            CURRENT_TIMESPENT = timespent;
+            CURRENT_STARS = stars;
+            CURRENT_REMARKS = remarks;
+
+            //print(PlayerPrefs.GetString("CURRENT_PLAYER") + " --- " + PlayerPrefs.GetString("CURRENT_SUBJECT") + " --- " + level + " --- " +
+            //    timespent + " --- " + stars + " --- " + remarks);
+
+            leaderboardGet(PlayerPrefs.GetString("CURRENT_PLAYER").Trim(), CURRENT_LEVEL);
+        }
+
+        private string conn, sqlQuery;
+        IDbConnection dbconn;
+        IDbCommand dbcmd;
+
+        public void leaderboardGet(string name, string level)
+        {
+            using (dbconn = new SqliteConnection(conn))
+            {
+                dbconn.Open(); //Open connection to the database.
+                IDbCommand cmd = dbconn.CreateCommand();
+                cmd.CommandText = string.Format("SELECT count(*) FROM sys_leaderboard WHERE name=\"{0}\" AND level=\"{1}\"", name, level);// table name
+                var count = (Int64)cmd.ExecuteScalar();
+                if (count > 0)
+                {
+                    isLeaderboardInsert(name, level);
+                }
+                else
+                {
+                    leaderboardInsert();
+                }
+                dbcmd = null;
+                dbconn = null;
+            }
+        }
+
+        public void leaderboardInsert()
+        {
+            using (dbconn = new SqliteConnection(conn))
+            {
+                dbconn.Open(); //Open connection to the database.
+                dbcmd = dbconn.CreateCommand();
+                sqlQuery = string.Format("insert into sys_leaderboard (name, subject, level, timespent, no_attempts, stars, remarks) values " +
+                    "(\"{0}\", \"{1}\", \"{2}\", \"{3}\", \"{4}\", \"{5}\", \"{6}\")", PlayerPrefs.GetString("CURRENT_PLAYER"), PlayerPrefs.GetString("CURRENT_SUBJECT"), CURRENT_LEVEL
+                    , CURRENT_TIMESPENT, 1, CURRENT_STARS, CURRENT_REMARKS);// table name
+                dbcmd.CommandText = sqlQuery;
+                dbcmd.ExecuteScalar();
+                dbconn.Close();
+            }
+        }
+
+        public bool isLeaderboardInsert(string name, string level)
+        {
+            using (dbconn = new SqliteConnection(conn))
+            {
+                dbconn.Open(); //Open connection to the database.
+                dbcmd = dbconn.CreateCommand();
+                sqlQuery = string.Format("SELECT timespent, no_attempts, stars FROM sys_leaderboard WHERE name=\"{0}\" AND level=\"{1}\"", name, level);// table name
+                dbcmd.CommandText = sqlQuery;
+                IDataReader reader = dbcmd.ExecuteReader();
+                string timespent = "";
+                int noAttempts = 0;
+                int stars = 0;
+                while (reader.Read())
+                {
+                    timespent = reader.GetString(0).Replace(":", "");
+                    noAttempts = reader.GetInt32(1);
+                    stars = reader.GetInt32(2);
+                    noAttempts+=1;
+                    break;
+                }
+
+                reader.Close();
+                reader = null;
+                dbcmd.Dispose();
+                dbcmd = null;
+                dbconn.Close();
+                dbconn = null;
+                print(stars + " --- " + CURRENT_STARS);
+                print(Convert.ToInt32(timespent) + " --- " + Convert.ToInt32(CURRENT_TIMESPENT.Replace(":", "")));
+                if (CURRENT_STARS > stars && Convert.ToInt32(timespent) < Convert.ToInt32(CURRENT_TIMESPENT.Replace(":", "")))
+                {
+                    // update timespent, no. of attempts, stars
+                    leaderboardUpdate(CURRENT_TIMESPENT, noAttempts, CURRENT_STARS, name, level);
+                }
+                else
+                {
+                    // update no. of attempts
+                    leaderboardUpdateNoAttempts(noAttempts, name, level);
+                }
+            }
+
+            return true;
+        }
+
+        private void leaderboardUpdate(string timespent, int noAttempts, int stars, string name, string level)
+        {
+            using (dbconn = new SqliteConnection(conn))
+            {
+                dbconn.Open(); //Open connection to the database.
+                dbcmd = dbconn.CreateCommand();
+                sqlQuery = string.Format("UPDATE sys_leaderboard set timespent=\"{0}\", no_attempts=\"{1}\", stars=\"{2}\", remarks=\"{6}\" WHERE name=\"{3}\" AND level=\"{4}\" AND subject=\"{5}\"", timespent, noAttempts, stars, name, level, PlayerPrefs.GetString("CURRENT_SUBJECT"), CURRENT_REMARKS);// table name
+                dbcmd.CommandText = sqlQuery;
+                dbcmd.ExecuteScalar();
+                dbconn.Close();
+            }
+        }
+
+        private void leaderboardUpdateNoAttempts(int noAttempts, string name, string level)
+        {
+            using (dbconn = new SqliteConnection(conn))
+            {
+                dbconn.Open(); //Open connection to the database.
+                dbcmd = dbconn.CreateCommand();
+                sqlQuery = string.Format("UPDATE sys_leaderboard set no_attempts=\"{0}\" WHERE name=\"{1}\" AND level=\"{2}\" AND subject=\"{3}\"", noAttempts, name, level, PlayerPrefs.GetString("CURRENT_SUBJECT"));// table name
+                dbcmd.CommandText = sqlQuery;
+                dbcmd.ExecuteScalar();
+                dbconn.Close();
+            }
+        }
+
         /// <summary>
         /// Runs the victory event and shows the victory screen
         /// </summary>
@@ -1884,12 +2025,17 @@ namespace TriviaQuizGame
             }
             yield return new WaitForSeconds(delay);
 
+            string timespent = GameObject.Find("TimerIcon/Text").GetComponent<Text>().text;
+
             GameObject.Find("GameControllerCategoryGrid/Question").gameObject.SetActive(false);
             GameObject.Find("GameControllerCategoryGrid/ScoreText").gameObject.SetActive(false);
             GameObject.Find("GameControllerCategoryGrid/BonusObject").gameObject.SetActive(false);
             GameObject.Find("GameControllerCategoryGrid/TimerIcon").gameObject.SetActive(false);
             GameObject.Find("GameControllerCategoryGrid/QuestionsCount").gameObject.SetActive(false);
             GameObject.Find("GameControllerCategoryGrid/Options").gameObject.SetActive(false);
+
+            int stars;
+            string remarks;
 
             //Show the game over screen
             if (victoryCanvas)
@@ -1901,6 +2047,8 @@ namespace TriviaQuizGame
                     (questionLimit == 20 && players[currentPlayer].score == 20))
                 {
                     // 3 stars
+                    stars = 3;
+                    remarks = "PERFECT";
                     victoryCanvas.Find("TextTitle").GetComponent<Text>().text = "PERFECT!";
                     GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
                     yield return new WaitForSeconds(1);
@@ -1913,6 +2061,8 @@ namespace TriviaQuizGame
                         (questionLimit == 20 && (players[currentPlayer].score <= 19 && players[currentPlayer].score >= 17)))
                 {
                     // 2 stars
+                    stars = 2;
+                    remarks = "PASSED";
                     GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
                     yield return new WaitForSeconds(1);
                     GameObject.Find("StarsContainer/Star 2/StarCollected").gameObject.SetActive(true);
@@ -1921,9 +2071,14 @@ namespace TriviaQuizGame
                 else
                 {
                     // 1 stars
+                    stars = 1;
+                    remarks = "PASSED";
                     GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
                     yield return new WaitForSeconds(1);
                 }
+
+                // Get score
+                GETSCORE(stars, remarks, timespent);
 
                 // If we have a TextScore and TextHighScore objects, then we are using the single player victory canvas
                 if (victoryCanvas.Find("ScoreTexts/TextScore") && victoryCanvas.Find("ScoreTexts/TextHighScore"))
@@ -2055,6 +2210,13 @@ namespace TriviaQuizGame
             {
                 //Show the game over screen
                 gameOverCanvas.gameObject.SetActive(true);
+
+                string timespent = GameObject.Find("TimerIcon/Text").GetComponent<Text>().text;
+                int stars = 0;
+                string remarks = "TRY AGAIN";
+
+                // Get score
+                GETSCORE(stars, remarks, timespent);
 
                 if ((questionLimit == 10 && players[currentPlayer].score == 4) ||
                     (questionLimit == 20 && players[currentPlayer].score == 14))

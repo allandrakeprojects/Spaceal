@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Mono.Data.Sqlite;
-using System.Data;
 using System;
+using System.Data;
 using UnityEngine.UI;
 
 public class PlayerCanvas : MonoBehaviour
@@ -196,6 +195,7 @@ public class PlayerCanvas : MonoBehaviour
             dbconn.Close();
         }
     }
+
     private void Deletvalue(int id)
     {
         using (dbconn = new SqliteConnection(conn))
@@ -394,7 +394,7 @@ public class PlayerCanvas : MonoBehaviour
         {
             dbconn.Open(); //Open connection to the database.
             dbcmd = dbconn.CreateCommand();
-            sqlQuery = string.Format("SELECT * FROM sys_leaderboard WHERE subject=\"{0}\" AND level=\"{1}\" ORDER BY score desc, timespent asc", dropdownSubjectSelected, dropdownLevelSelected);// table name
+            sqlQuery = string.Format("SELECT * FROM sys_leaderboard WHERE subject=\"{0}\" AND level=\"{1}\" ORDER BY stars desc, timespent asc", dropdownSubjectSelected, dropdownLevelSelected);// table name
             dbcmd.CommandText = sqlQuery;
             IDataReader reader = dbcmd.ExecuteReader();
             int count = 0;
@@ -407,7 +407,7 @@ public class PlayerCanvas : MonoBehaviour
                 string level_ = reader.GetString(3);
                 string timespent = reader.GetString(4);
                 int noOfAttempts = reader.GetInt32(5);
-                int score = reader.GetInt32(6);
+                int stars = reader.GetInt32(6);
                 string remarks = reader.GetString(7);
 
                 if (count == 1)
@@ -420,20 +420,20 @@ public class PlayerCanvas : MonoBehaviour
                     goHighscore.transform.Find("levelText").GetComponent<Text>().text = level_;
                     goHighscore.transform.Find("timeSpentText").GetComponent<Text>().text = timespent;
                     goHighscore.transform.Find("noOfAttempts").GetComponent<Text>().text = noOfAttempts.ToString();
-                    if (score == 3)
+                    if (stars == 3)
                     {
                         // 3 stars
                         goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
                         goHighscore.transform.Find("starsObject/Star 2/StarCollected").gameObject.SetActive(true);
                         goHighscore.transform.Find("starsObject/Star 3/StarCollected").gameObject.SetActive(true);
                     }
-                    else if (score == 2)
+                    else if (stars == 2)
                     {
                         // 2 stars
                         goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
                         goHighscore.transform.Find("starsObject/Star 2/StarCollected").gameObject.SetActive(true);
                     }
-                    else if (score == 1)
+                    else if (stars == 1)
                     {
                         // 1 star
                         goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
@@ -452,20 +452,20 @@ public class PlayerCanvas : MonoBehaviour
                     goHighscore.transform.Find("levelText").GetComponent<Text>().text = level_;
                     goHighscore.transform.Find("timeSpentText").GetComponent<Text>().text = timespent;
                     goHighscore.transform.Find("noOfAttempts").GetComponent<Text>().text = noOfAttempts.ToString();
-                    if (score == 3)
+                    if (stars == 3)
                     {
                         // 3 stars
                         goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
                         goHighscore.transform.Find("starsObject/Star 2/StarCollected").gameObject.SetActive(true);
                         goHighscore.transform.Find("starsObject/Star 3/StarCollected").gameObject.SetActive(true);
                     }
-                    else if (score == 2)
+                    else if (stars == 2)
                     {
                         // 2 stars
                         goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
                         goHighscore.transform.Find("starsObject/Star 2/StarCollected").gameObject.SetActive(true);
                     }
-                    else if (score == 1)
+                    else if (stars == 1)
                     {
                         // 1 star
                         goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
@@ -484,20 +484,20 @@ public class PlayerCanvas : MonoBehaviour
                     goHighscore.transform.Find("levelText").GetComponent<Text>().text = level_;
                     goHighscore.transform.Find("timeSpentText").GetComponent<Text>().text = timespent;
                     goHighscore.transform.Find("noOfAttempts").GetComponent<Text>().text = noOfAttempts.ToString();
-                    if (score == 3)
+                    if (stars == 3)
                     {
                         // 3 stars
                         goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
                         goHighscore.transform.Find("starsObject/Star 2/StarCollected").gameObject.SetActive(true);
                         goHighscore.transform.Find("starsObject/Star 3/StarCollected").gameObject.SetActive(true);
                     }
-                    else if (score == 2)
+                    else if (stars == 2)
                     {
                         // 2 stars
                         goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
                         goHighscore.transform.Find("starsObject/Star 2/StarCollected").gameObject.SetActive(true);
                     }
-                    else if (score == 1)
+                    else if (stars == 1)
                     {
                         // 1 star
                         goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
@@ -515,20 +515,20 @@ public class PlayerCanvas : MonoBehaviour
                     goHighscore.transform.Find("levelText").GetComponent<Text>().text = level_;
                     goHighscore.transform.Find("timeSpentText").GetComponent<Text>().text = timespent;
                     goHighscore.transform.Find("noOfAttempts").GetComponent<Text>().text = noOfAttempts.ToString();
-                    if (score == 3)
+                    if (stars == 3)
                     {
                         // 3 stars
                         goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
                         goHighscore.transform.Find("starsObject/Star 2/StarCollected").gameObject.SetActive(true);
                         goHighscore.transform.Find("starsObject/Star 3/StarCollected").gameObject.SetActive(true);
                     }
-                    else if (score == 2)
+                    else if (stars == 2)
                     {
                         // 2 stars
                         goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
                         goHighscore.transform.Find("starsObject/Star 2/StarCollected").gameObject.SetActive(true);
                     }
-                    else if (score == 1)
+                    else if (stars == 1)
                     {
                         // 1 star
                         goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
