@@ -12,11 +12,18 @@ public class PlayerCanvas : MonoBehaviour
     public Transform Player;
     public Transform PlayerList;
     public Transform Leaderboard;
+    public Transform LeaderboardNoRecord;
     public GameObject buttonPrefab;
-    public RectTransform ParentPanel;
+    public RectTransform buttonParentPanel;
     List<GameObject> generatedButtonObject = new List<GameObject>();
     public InputField PlayerInputField;
     public InputField PlayerListInputField;
+    public Dropdown dropdownSubject;
+    public Dropdown dropdownLevel;
+
+    public GameObject highscorePrefab;
+    public RectTransform highScoreParentPanel;
+    List<GameObject> generatedHighscoreObject = new List<GameObject>();
 
     // Start is called before the first frame update
     //void Start()
@@ -32,17 +39,69 @@ public class PlayerCanvas : MonoBehaviour
     //}
 
     private string conn, sqlQuery;
+    private string dropdownSubjectSelected;
+    private string dropdownLevelSelected;
     IDbConnection dbconn;
     IDbCommand dbcmd;
     // Use this for initialization
     void Start()
     {
-        PlayerPrefs.SetString("CURRENT_PLAYER", "");
+        dropdownSubject.onValueChanged.AddListener(delegate {
+            DropdownValueChangedSubject(dropdownSubject);
+        });
+
+        dropdownSubjectSelected = "English";
+
+        dropdownLevel.onValueChanged.AddListener(delegate {
+            DropdownValueChangedLevel(dropdownLevel);
+        });
+
+        dropdownLevelSelected = "Level 1";
+
         conn = "URI=file:" + Application.dataPath + "/Plugins/SpacealDam.s3db"; //Path to database.
         //Deletvalue(6);
         //insertStudent("ahmedm", "ahmedm@gmail.com", "sss"); 
         //Updatevalue("a", "w@gamil.com", "1st", 1);
         readers();
+    }
+
+    //Ouput the new value of the Dropdown into Text
+    void DropdownValueChangedSubject(Dropdown change)
+    {
+        dropdownSubjectSelected = change.value.ToString();
+        if (dropdownSubjectSelected == "0")
+        {
+            dropdownSubjectSelected = "English";
+        } else if (dropdownSubjectSelected == "1")
+        {
+            dropdownSubjectSelected = "Science";
+        }
+        else if (dropdownSubjectSelected == "2")
+        {
+            dropdownSubjectSelected = "Math";
+        }
+
+        leaderboardGet();
+    }
+
+    //Ouput the new value of the Dropdown into Text
+    void DropdownValueChangedLevel(Dropdown change)
+    {
+        dropdownLevelSelected = change.value.ToString();
+        if (dropdownLevelSelected == "0")
+        {
+            dropdownLevelSelected = "Level 1";
+        }
+        else if (dropdownLevelSelected == "1")
+        {
+            dropdownLevelSelected = "Level 2";
+        }
+        else if (dropdownLevelSelected == "2")
+        {
+            dropdownLevelSelected = "Level 3";
+        }
+
+        leaderboardGet();
     }
 
     private bool isInsertStudent(string nameGet)
@@ -95,7 +154,7 @@ public class PlayerCanvas : MonoBehaviour
                 GameObject goButton = (GameObject)Instantiate(buttonPrefab);
                 generatedButtonObject.Add(goButton);
                 goButton.GetComponentInChildren<Text>().text = name;
-                goButton.transform.SetParent(ParentPanel, false);
+                goButton.transform.SetParent(buttonParentPanel, false);
                 goButton.transform.localScale = new Vector3(1, 1, 1);
 
                 Button tempButton = goButton.GetComponent<Button>();
@@ -176,12 +235,20 @@ public class PlayerCanvas : MonoBehaviour
             var count = (Int64)cmd.ExecuteScalar();
             if (count > 0)
             {
-                PlayerList.Find("ButtonBack").gameObject.SetActive(false);
-                PlayerList.gameObject.SetActive(true);
-                Player.gameObject.SetActive(false);
+                if (PlayerPrefs.GetString("CURRENT_PLAYER") == "")
+                {
+                    PlayerList.Find("ButtonBack").gameObject.SetActive(false);
+                    PlayerList.gameObject.SetActive(true);
+                    Player.gameObject.SetActive(false);
 
-                // Show data in player list
-                studentsList();
+                    // Show data in player list
+                    studentsList();
+                }
+                else
+                {
+                    Menu.Find("PlayerName").GetComponent<Text>().text = PlayerPrefs.GetString("CURRENT_PLAYER");
+                    GOHome();
+                }
             }
             //dbcmd = dbconn.CreateCommand();
             //sqlQuery = "SELECT * " + "FROM sys_students";// table name
@@ -217,7 +284,7 @@ public class PlayerCanvas : MonoBehaviour
 
         if (username.Length > 0)
         {
-            if (username.Length < 15)
+            if (username.Length < 12)
             {
                 if (isInsertStudent(username))
                 {
@@ -283,6 +350,7 @@ public class PlayerCanvas : MonoBehaviour
     {
         Menu.gameObject.SetActive(true);
         PlayerList.gameObject.SetActive(false);
+        Player.gameObject.SetActive(false);
         Leaderboard.gameObject.SetActive(false);
     }
 
@@ -290,7 +358,194 @@ public class PlayerCanvas : MonoBehaviour
     {
         Leaderboard.gameObject.SetActive(true);
         Menu.gameObject.SetActive(false);
+
+        leaderboardGet();
     }
+    private void leaderboardGet()
+    {
+        foreach (var obj in generatedHighscoreObject)
+        {
+            Destroy(obj);
+        }
+
+        using (dbconn = new SqliteConnection(conn))
+        {
+            dbconn.Open(); //Open connection to the database.
+            IDbCommand cmd = dbconn.CreateCommand();
+            cmd.CommandText = string.Format("SELECT count(*) FROM sys_leaderboard WHERE subject=\"{0}\" AND level=\"{1}\"", dropdownSubjectSelected, dropdownLevelSelected);// table name
+            var count = (Int64)cmd.ExecuteScalar();
+            if (count > 0)
+            {
+                LeaderboardNoRecord.gameObject.SetActive(false);
+                leaderboardShow();
+            }
+            else
+            {
+                LeaderboardNoRecord.gameObject.SetActive(true);
+            }
+            dbcmd = null;
+            dbconn = null;
+        }
+    }
+
+    private void leaderboardShow()
+    {
+        using (dbconn = new SqliteConnection(conn))
+        {
+            dbconn.Open(); //Open connection to the database.
+            dbcmd = dbconn.CreateCommand();
+            sqlQuery = string.Format("SELECT * FROM sys_leaderboard WHERE subject=\"{0}\" AND level=\"{1}\" ORDER BY score desc, timespent asc", dropdownSubjectSelected, dropdownLevelSelected);// table name
+            dbcmd.CommandText = sqlQuery;
+            IDataReader reader = dbcmd.ExecuteReader();
+            int count = 0;
+            while (reader.Read())
+            {
+                count++;
+                int id = reader.GetInt32(0);
+                string name = reader.GetString(1);
+                string subject_ = reader.GetString(2);
+                string level_ = reader.GetString(3);
+                string timespent = reader.GetString(4);
+                int noOfAttempts = reader.GetInt32(5);
+                int score = reader.GetInt32(6);
+                string remarks = reader.GetString(7);
+
+                if (count == 1)
+                {
+                    // First
+                    GameObject goHighscore = (GameObject)Instantiate(highscorePrefab);
+                    generatedHighscoreObject.Add(goHighscore);
+                    goHighscore.transform.Find("nameText").GetComponent<Text>().text = name;
+                    goHighscore.transform.Find("subjectText").GetComponent<Text>().text = subject_;
+                    goHighscore.transform.Find("levelText").GetComponent<Text>().text = level_;
+                    goHighscore.transform.Find("timeSpentText").GetComponent<Text>().text = timespent;
+                    goHighscore.transform.Find("noOfAttempts").GetComponent<Text>().text = noOfAttempts.ToString();
+                    if (score == 3)
+                    {
+                        // 3 stars
+                        goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
+                        goHighscore.transform.Find("starsObject/Star 2/StarCollected").gameObject.SetActive(true);
+                        goHighscore.transform.Find("starsObject/Star 3/StarCollected").gameObject.SetActive(true);
+                    }
+                    else if (score == 2)
+                    {
+                        // 2 stars
+                        goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
+                        goHighscore.transform.Find("starsObject/Star 2/StarCollected").gameObject.SetActive(true);
+                    }
+                    else if (score == 1)
+                    {
+                        // 1 star
+                        goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
+                    }
+                    goHighscore.transform.Find("remarksText").GetComponent<Text>().text = remarks;
+                    goHighscore.transform.SetParent(highScoreParentPanel, false);
+                }
+                else if (count == 2)
+                {
+                    // Second
+                    GameObject goHighscore = (GameObject)Instantiate(highscorePrefab);
+                    generatedHighscoreObject.Add(goHighscore);
+                    goHighscore.transform.Find("trophy").GetComponent<Image>().color = new Color32(182, 179, 180, 255);
+                    goHighscore.transform.Find("nameText").GetComponent<Text>().text = name;
+                    goHighscore.transform.Find("subjectText").GetComponent<Text>().text = subject_;
+                    goHighscore.transform.Find("levelText").GetComponent<Text>().text = level_;
+                    goHighscore.transform.Find("timeSpentText").GetComponent<Text>().text = timespent;
+                    goHighscore.transform.Find("noOfAttempts").GetComponent<Text>().text = noOfAttempts.ToString();
+                    if (score == 3)
+                    {
+                        // 3 stars
+                        goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
+                        goHighscore.transform.Find("starsObject/Star 2/StarCollected").gameObject.SetActive(true);
+                        goHighscore.transform.Find("starsObject/Star 3/StarCollected").gameObject.SetActive(true);
+                    }
+                    else if (score == 2)
+                    {
+                        // 2 stars
+                        goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
+                        goHighscore.transform.Find("starsObject/Star 2/StarCollected").gameObject.SetActive(true);
+                    }
+                    else if (score == 1)
+                    {
+                        // 1 star
+                        goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
+                    }
+                    goHighscore.transform.Find("remarksText").GetComponent<Text>().text = remarks;
+                    goHighscore.transform.SetParent(highScoreParentPanel, false);
+                }
+                else if (count == 3)
+                {
+                    // Third
+                    GameObject goHighscore = (GameObject)Instantiate(highscorePrefab);
+                    generatedHighscoreObject.Add(goHighscore);
+                    goHighscore.transform.Find("trophy").GetComponent<Image>().color = new Color32(184, 121, 100, 255);
+                    goHighscore.transform.Find("nameText").GetComponent<Text>().text = name;
+                    goHighscore.transform.Find("subjectText").GetComponent<Text>().text = subject_;
+                    goHighscore.transform.Find("levelText").GetComponent<Text>().text = level_;
+                    goHighscore.transform.Find("timeSpentText").GetComponent<Text>().text = timespent;
+                    goHighscore.transform.Find("noOfAttempts").GetComponent<Text>().text = noOfAttempts.ToString();
+                    if (score == 3)
+                    {
+                        // 3 stars
+                        goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
+                        goHighscore.transform.Find("starsObject/Star 2/StarCollected").gameObject.SetActive(true);
+                        goHighscore.transform.Find("starsObject/Star 3/StarCollected").gameObject.SetActive(true);
+                    }
+                    else if (score == 2)
+                    {
+                        // 2 stars
+                        goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
+                        goHighscore.transform.Find("starsObject/Star 2/StarCollected").gameObject.SetActive(true);
+                    }
+                    else if (score == 1)
+                    {
+                        // 1 star
+                        goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
+                    }
+                    goHighscore.transform.Find("remarksText").GetComponent<Text>().text = remarks;
+                    goHighscore.transform.SetParent(highScoreParentPanel, false);
+                }
+                else
+                {
+                    GameObject goHighscore = (GameObject)Instantiate(highscorePrefab);
+                    generatedHighscoreObject.Add(goHighscore);
+                    goHighscore.transform.Find("trophy").gameObject.SetActive(false);
+                    goHighscore.transform.Find("nameText").GetComponent<Text>().text = name;
+                    goHighscore.transform.Find("subjectText").GetComponent<Text>().text = subject_;
+                    goHighscore.transform.Find("levelText").GetComponent<Text>().text = level_;
+                    goHighscore.transform.Find("timeSpentText").GetComponent<Text>().text = timespent;
+                    goHighscore.transform.Find("noOfAttempts").GetComponent<Text>().text = noOfAttempts.ToString();
+                    if (score == 3)
+                    {
+                        // 3 stars
+                        goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
+                        goHighscore.transform.Find("starsObject/Star 2/StarCollected").gameObject.SetActive(true);
+                        goHighscore.transform.Find("starsObject/Star 3/StarCollected").gameObject.SetActive(true);
+                    }
+                    else if (score == 2)
+                    {
+                        // 2 stars
+                        goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
+                        goHighscore.transform.Find("starsObject/Star 2/StarCollected").gameObject.SetActive(true);
+                    }
+                    else if (score == 1)
+                    {
+                        // 1 star
+                        goHighscore.transform.Find("starsObject/Star 1/StarCollected").gameObject.SetActive(true);
+                    }
+                    goHighscore.transform.Find("remarksText").GetComponent<Text>().text = remarks;
+                    goHighscore.transform.SetParent(highScoreParentPanel, false);
+                }
+            }
+            reader.Close();
+            reader = null;
+            dbcmd.Dispose();
+            dbcmd = null;
+            dbconn.Close();
+            dbconn = null;
+        }
+    }
+
 
     // Update is called once per frame
     void Update()

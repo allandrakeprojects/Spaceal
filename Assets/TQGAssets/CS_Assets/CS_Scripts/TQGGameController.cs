@@ -423,6 +423,8 @@ namespace TriviaQuizGame
                 questionLimit = 5;
             }
 
+            print(currentCategory);
+
             PlayerPrefs.SetInt("DragAndDropLimit", questionLimit);
             PlayerPrefs.SetString("Category", currentCategory);
 
