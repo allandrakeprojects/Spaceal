@@ -677,7 +677,7 @@ namespace TriviaQuizGame
             }
             string combination = multipleChoiceQuestions + dragAndDropQuestions;
 
-            String[] combinationArray = multipleChoiceQuestions.ToString().Split(new string[] { "\n" }, StringSplitOptions.None);
+            String[] combinationArray = combination.ToString().Split(new string[] { "\n" }, StringSplitOptions.None);
 
             for (index = 0; index < combinationArray.Length; index++)
             {
@@ -697,17 +697,62 @@ namespace TriviaQuizGame
         /// <param name="questions">A list of questions</param>
         Question[] ShuffleQuestions(Question[] questions)
         {
-            // Go through all the questions and shuffle them
-            for (index = 0; index < questions.Length; index++)
+            if (currentCategory.ToLower().Contains("level 3"))
             {
-                // Choose a random index from the question list
-                int randomIndex = UnityEngine.Random.Range(index, questions.Length);
-                if (!questions[randomIndex].question.ToLower().Contains("drag"))
+                // Go through all the questions and shuffle them
+                for (index = 0; index < questions.Length; index++)
+                {
+                    // Assign a random question from the list
+                    int randomIndex = UnityEngine.Random.Range(index, questions.Length);
+                    if (!questions[randomIndex].question.ToLower().Contains("drag"))
+                    {
+                        // Hold the question in a temporary variable
+                        Question tempQuestion = questions[index];
+
+                        // Choose a random index from the question list
+                        questions[index] = questions[randomIndex];
+
+                        // Assign the temporary question to the random question we chose
+                        questions[randomIndex] = tempQuestion;
+                    }
+                }
+
+                List<int> randomNumbers = new List<int>();
+                int count = 0;
+                for (int i = 10; i < 20; i++)
+                {
+                    int number;
+
+                    do number = rand.Next(10, 20);
+                    while (randomNumbers.Contains(number));
+
+                    randomNumbers.Add(number);
+
+                    if (questions[number].question.ToLower().Contains("drag"))
+                    {
+                        // Hold the question in a temporary variable
+                        Question tempQuestion = questions[i];
+
+                        // Choose a random index from the question list
+                        questions[i] = questions[number];
+
+                        // Assign the temporary question to the random question we chose
+                        questions[number] = tempQuestion;
+                    }
+                }
+            }
+            else
+            {
+                // Go through all the questions and shuffle them
+                for (index = 0; index < questions.Length; index++)
                 {
                     // Hold the question in a temporary variable
                     Question tempQuestion = questions[index];
 
                     // Assign a random question from the list
+                    int randomIndex = UnityEngine.Random.Range(index, questions.Length);
+
+                    // Choose a random index from the question list
                     questions[index] = questions[randomIndex];
 
                     // Assign the temporary question to the random question we chose
@@ -752,7 +797,15 @@ namespace TriviaQuizGame
         {
             PlayerPrefs.DeleteKey("IsDragCorrect");
             PlayerPrefs.SetInt("DragAndDropCount", 0);
-            PlayerPrefs.SetInt("DragAndDropScore", 0);
+
+            if (PlayerPrefs.GetInt("DragAndDropCurrentCount") == 11)
+            {
+                PlayerPrefs.SetInt("DragAndDropScore", Convert.ToInt32(players[currentPlayer].scoreCount));
+            }
+            else
+            {
+                PlayerPrefs.SetInt("DragAndDropScore", 0);
+            }
 
             if (isGameOver == false)
             {
@@ -1192,8 +1245,8 @@ namespace TriviaQuizGame
 
                         //If we have no more questions, we win the game!
                         // adpd update
-                        if ((players[currentPlayer].score >= 7 && currentCategory.ToString().ToLower().Contains("level 1")) ||
-                            (players[currentPlayer].score >= 17))
+                        if ((players[currentPlayer].score >= 5 && currentCategory.ToString().ToLower().Contains("level 1")) ||
+                            (players[currentPlayer].score >= 15))
                         {
                             StartCoroutine(Victory(0));
                         }
@@ -1218,8 +1271,8 @@ namespace TriviaQuizGame
                         if (questionLimitCount > questionLimit)
                         {
                             // adpd update
-                            if ((players[currentPlayer].score >= 7 && currentCategory.ToString().ToLower().Contains("level 1")) ||
-                                (players[currentPlayer].score >= 17))
+                            if ((players[currentPlayer].score >= 5 && currentCategory.ToString().ToLower().Contains("level 1")) ||
+                                (players[currentPlayer].score >= 15))
                             {
                                 StartCoroutine(Victory(0));
                             }
@@ -1831,6 +1884,7 @@ namespace TriviaQuizGame
 
             GameObject.Find("GameControllerCategoryGrid/Question").gameObject.SetActive(false);
             GameObject.Find("GameControllerCategoryGrid/ScoreText").gameObject.SetActive(false);
+            GameObject.Find("GameControllerCategoryGrid/BonusObject").gameObject.SetActive(false);
             GameObject.Find("GameControllerCategoryGrid/TimerIcon").gameObject.SetActive(false);
             GameObject.Find("GameControllerCategoryGrid/QuestionsCount").gameObject.SetActive(false);
             GameObject.Find("GameControllerCategoryGrid/Options").gameObject.SetActive(false);
@@ -2000,17 +2054,10 @@ namespace TriviaQuizGame
                 //Show the game over screen
                 gameOverCanvas.gameObject.SetActive(true);
 
-                if ((questionLimit == 10 && players[currentPlayer].score == 6) ||
-                    (questionLimit == 20 && players[currentPlayer].score == 16))
+                if ((questionLimit == 10 && players[currentPlayer].score == 4) ||
+                    (questionLimit == 20 && players[currentPlayer].score == 14))
                 {
                     gameOverCanvas.Find("TextTitle").GetComponent<Text>().text = "YOU CAN DO IT!";
-                }
-
-                if (players[currentPlayer].score != 0)
-                {
-                    // 1 stars
-                    GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
-                   yield return new WaitForSeconds(1);
                 }
 
                 //Write the score text, if it exists

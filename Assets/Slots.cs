@@ -269,9 +269,9 @@ public class Slots : MonoBehaviour, IDropHandler
         }
         else
         {
-            if ((PlayerPrefs.GetInt("DragAndDropScore") >= 7 && currentCategory.ToString().ToLower().Contains("level 1")) ||
-                (PlayerPrefs.GetInt("DragAndDropScore") >= 7 && currentCategory.ToString().ToLower().Contains("level 2")) ||
-                (PlayerPrefs.GetInt("DragAndDropScore") >= 17))
+            if ((PlayerPrefs.GetInt("DragAndDropScore") >= 5 && currentCategory.ToString().ToLower().Contains("level 1")) ||
+                (PlayerPrefs.GetInt("DragAndDropScore") >= 5 && currentCategory.ToString().ToLower().Contains("level 2")) ||
+                (PlayerPrefs.GetInt("DragAndDropScore") >= 15))
             {
                 StartCoroutine(Victory(0));
             }
@@ -300,8 +300,18 @@ public class Slots : MonoBehaviour, IDropHandler
         }
         yield return new WaitForSeconds(delay);
 
-        GameObject.Find("GameControllerCategoryGrid/Question").gameObject.SetActive(false);
+        GameObject.Find("GameControllerCategoryGrid/Question").GetComponent<Image>().enabled = false;
+        GameObject.Find("GameControllerCategoryGrid/Question/Text").GetComponent<Text>().text = "";
+        GameObject.Find("DragAndDropObject/ButtonAnswer0").GetComponent<Image>().enabled = false;
+        GameObject.Find("DragAndDropObject/ButtonAnswer0/0").GetComponent<Text>().text = "";
+        GameObject.Find("DragAndDropObject/ButtonAnswer1").GetComponent<Image>().enabled = false;
+        GameObject.Find("DragAndDropObject/ButtonAnswer1/1").GetComponent<Text>().text = "";
+        GameObject.Find("DragAndDropObject/ButtonAnswer2").GetComponent<Image>().enabled = false;
+        GameObject.Find("DragAndDropObject/ButtonAnswer2/2").GetComponent<Text>().text = "";
+        GameObject.Find("DragAndDropObject/ButtonAnswer3").GetComponent<Image>().enabled = false;
+        GameObject.Find("DragAndDropObject/ButtonAnswer3/3").GetComponent<Text>().text = "";
         GameObject.Find("GameControllerCategoryGrid/ScoreText").gameObject.SetActive(false);
+        GameObject.Find("GameControllerCategoryGrid/BonusObject").gameObject.SetActive(false);
         GameObject.Find("GameControllerCategoryGrid/TimerIcon").gameObject.SetActive(false);
         GameObject.Find("GameControllerCategoryGrid/QuestionsCount").gameObject.SetActive(false);
         GameObject.Find("GameControllerCategoryGrid/Options").gameObject.SetActive(false);
@@ -335,7 +345,7 @@ public class Slots : MonoBehaviour, IDropHandler
             }
             else
             {
-                // 1 stars
+                // 1 star
                 GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
                 yield return new WaitForSeconds(1);
             }
@@ -467,17 +477,10 @@ public class Slots : MonoBehaviour, IDropHandler
             //Show the game over screen
             gameOverCanvas.gameObject.SetActive(true);
 
-            if ((PlayerPrefs.GetInt("DragAndDropLimit") == 10 && PlayerPrefs.GetInt("DragAndDropScore") == 6) ||
-                (PlayerPrefs.GetInt("DragAndDropLimit") == 20 && PlayerPrefs.GetInt("DragAndDropScore") == 16))
+            if ((PlayerPrefs.GetInt("DragAndDropLimit") == 10 && PlayerPrefs.GetInt("DragAndDropScore") == 4) ||
+                (PlayerPrefs.GetInt("DragAndDropLimit") == 20 && PlayerPrefs.GetInt("DragAndDropScore") == 14))
             {
                 gameOverCanvas.Find("TextTitle").GetComponent<Text>().text = "YOU CAN DO IT!";
-            }
-
-            if (PlayerPrefs.GetInt("DragAndDropScore") != 0)
-            {
-                // 1 stars
-                GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
-                yield return new WaitForSeconds(1);
             }
 
             //Write the score text, if it exists
