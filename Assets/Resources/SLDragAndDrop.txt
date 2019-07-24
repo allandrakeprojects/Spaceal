@@ -1,0 +1,49 @@
+Bee --- buzz
+Bird --- chirp
+Cat --- meow
+Cow --- moo
+
+Duck --- quack
+Dog --- woof
+Pig --- oink-oink
+Goat --- baa-baa
+
+Hamster --- squeak
+Hen --- cluck-cluck
+Horse --- neigh
+Lion --- roar
+
+Frog --- ribbet
+Donkey --- hee-haw
+Chick --- cheep-cheep
+Monkey --- ooh-ohh eeh-ehh
+
+Snake --- hiss
+Elephant --- trumpet
+Eagle --- screech
+Kookaburra --- laugh
+
+Goose --- honk
+Owl --- hoot
+Turkey --- gobble
+Parrot --- talk
+
+Ape --- Ape
+Bear --- Bear
+Bull --- Bull
+Camel --- Camel
+
+Armadillo --- Armadillo
+Hippopotamus --- Hippopotamus
+Tarantula --- Tarantula
+Wolf --- Wolf
+
+Toucan --- Toucan
+Ocelot --- Ocelot
+Kinkajou --- Kinkajou
+Caracal --- Caracal
+
+Savannah Cat --- Savannah Cat
+Cat Exotic Shorthair --- Cat Exotic Shorthair
+Orangutan --- Orangutan
+Rhinoceros --- Rhinoceros

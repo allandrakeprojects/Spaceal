@@ -823,6 +823,11 @@ namespace TriviaQuizGame
                     if (questions[currentQuestion].question.ToString().Contains("Drag"))
                     {
                         // asdasdasd
+                        if (imageObject) imageObject.gameObject.SetActive(false);
+
+                        // Disable the button from the question, so that we don't accidentally try to open an image that isn't there
+                        if (questionObject.GetComponent<Button>()) questionObject.GetComponent<Button>().enabled = false;
+
                         questionObject.Find("DragAndDropObject").gameObject.SetActive(true);
                     }
                     else
@@ -873,6 +878,11 @@ namespace TriviaQuizGame
                     {
                         if (questions[currentQuestion].question.ToString().Contains("Drag"))
                         {
+                            if (imageObject) imageObject.gameObject.SetActive(false);
+
+                            // Disable the button from the question, so that we don't accidentally try to open an image that isn't there
+                            if (questionObject.GetComponent<Button>()) questionObject.GetComponent<Button>().enabled = false;
+
                             questionObject.Find("DragAndDropObject").gameObject.SetActive(true);
                         }
                         else
@@ -1094,6 +1104,11 @@ namespace TriviaQuizGame
                             // adpd update
                             if (questions[currentQuestion].question.ToString().Contains("Drag"))
                             {
+                                if (imageObject) imageObject.gameObject.SetActive(false);
+
+                                // Disable the button from the question, so that we don't accidentally try to open an image that isn't there
+                                if (questionObject.GetComponent<Button>()) questionObject.GetComponent<Button>().enabled = false;
+
                                 answerObjects[index].GetComponent<Button>().enabled = false;
                             }
                             else
@@ -1207,7 +1222,7 @@ namespace TriviaQuizGame
                                 }
                                 else
                                 {
-                                    questionObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = questionTitleArray[count].Trim();
+                                    questionObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = questionTitleArray[count].Trim().Replace("//", "÷");
                                 }
                                 count++;
                             }
@@ -1960,8 +1975,8 @@ namespace TriviaQuizGame
                 dbcmd = null;
                 dbconn.Close();
                 dbconn = null;
-                print(stars + " --- " + CURRENT_STARS);
-                print(Convert.ToInt32(timespent) + " --- " + Convert.ToInt32(CURRENT_TIMESPENT.Replace(":", "")));
+                //print(stars + " --- " + CURRENT_STARS);
+                //print(Convert.ToInt32(timespent) + " --- " + Convert.ToInt32(CURRENT_TIMESPENT.Replace(":", "")));
                 if (CURRENT_STARS > stars && Convert.ToInt32(timespent) < Convert.ToInt32(CURRENT_TIMESPENT.Replace(":", "")))
                 {
                     // update timespent, no. of attempts, stars

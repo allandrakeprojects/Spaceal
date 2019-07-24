@@ -222,7 +222,7 @@ public class Slots : MonoBehaviour, IDropHandler
                     {
                         Sprite sprite_ = Resources.Load("New Folder/Buttons/buttonblue", typeof(Sprite)) as Sprite;
                         GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponent<Image>().sprite = sprite_;
-                        GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = questionArray[i].Trim();
+                        GameObject.Find("DragAndDropObject/ButtonAnswer" + number).GetComponentInChildren<Text>().text = questionArray[i].Trim().Replace("//", "÷");
                     }
 
                     GameObject.Find("Answers/ButtonAnswer" + number).GetComponent<Image>().enabled = true;
@@ -336,7 +336,7 @@ public class Slots : MonoBehaviour, IDropHandler
         {
             dbconn.Open(); //Open connection to the database.
             IDbCommand cmd = dbconn.CreateCommand();
-            cmd.CommandText = string.Format("SELECT count(*) FROM sys_leaderboard WHERE name=\"{0}\" AND level=\"{1}\"", name, level);// table name
+            cmd.CommandText = string.Format("SELECT count(*) FROM sys_leaderboard WHERE name=\"{0}\" AND subject=\"{1}\" AND level=\"{2}\"", name, PlayerPrefs.GetString("CURRENT_SUBJECT"), level);// table name
             var count = (Int64)cmd.ExecuteScalar();
             if (count > 0)
             {
@@ -372,7 +372,7 @@ public class Slots : MonoBehaviour, IDropHandler
         {
             dbconn.Open(); //Open connection to the database.
             dbcmd = dbconn.CreateCommand();
-            sqlQuery = string.Format("SELECT timespent, no_attempts, stars FROM sys_leaderboard WHERE name=\"{0}\" AND level=\"{1}\"", name, level);// table name
+            sqlQuery = string.Format("SELECT timespent, no_attempts, stars FROM sys_leaderboard WHERE name=\"{0}\" AND subject=\"{1}\" AND level=\"{2}\"", name, PlayerPrefs.GetString("CURRENT_SUBJECT"), level);// table name
             dbcmd.CommandText = sqlQuery;
             IDataReader reader = dbcmd.ExecuteReader();
             string timespent = "";
@@ -416,7 +416,7 @@ public class Slots : MonoBehaviour, IDropHandler
         {
             dbconn.Open(); //Open connection to the database.
             dbcmd = dbconn.CreateCommand();
-            sqlQuery = string.Format("UPDATE sys_leaderboard set timespent=\"{0}\", no_attempts=\"{1}\", stars=\"{2}\", remarks=\"{6}\" WHERE name=\"{3}\" AND level=\"{4}\" AND subject=\"{5}\"", timespent, noAttempts, stars, name, level, PlayerPrefs.GetString("CURRENT_SUBJECT"), CURRENT_REMARKS);// table name
+            sqlQuery = string.Format("UPDATE sys_leaderboard set timespent=\"{0}\", no_attempts=\"{1}\", stars=\"{2}\", remarks=\"{3}\" WHERE name=\"{4}\" AND subject=\"{5}\" AND level=\"{6}\"", timespent, noAttempts, stars, CURRENT_REMARKS, name, PlayerPrefs.GetString("CURRENT_SUBJECT"), level);// table name
             dbcmd.CommandText = sqlQuery;
             dbcmd.ExecuteScalar();
             dbconn.Close();
@@ -429,7 +429,7 @@ public class Slots : MonoBehaviour, IDropHandler
         {
             dbconn.Open(); //Open connection to the database.
             dbcmd = dbconn.CreateCommand();
-            sqlQuery = string.Format("UPDATE sys_leaderboard set no_attempts=\"{0}\" WHERE name=\"{1}\" AND level=\"{2}\" AND subject=\"{3}\"", noAttempts, name, level, PlayerPrefs.GetString("CURRENT_SUBJECT"));// table name
+            sqlQuery = string.Format("UPDATE sys_leaderboard set no_attempts=\"{0}\" WHERE name=\"{1}\" AND subject=\"{2}\" AND level=\"{3}\"", noAttempts, name, PlayerPrefs.GetString("CURRENT_SUBJECT"), level);// table name
             dbcmd.CommandText = sqlQuery;
             dbcmd.ExecuteScalar();
             dbconn.Close();
@@ -801,8 +801,21 @@ public class Slots : MonoBehaviour, IDropHandler
     //[MenuItem("Tools/Read file")]
     public void ReadString(string answer, string index)
     {
-        TextAsset ELDragAndDrop = (TextAsset)Resources.Load("ELDragAndDrop");
-        if (ELDragAndDrop.text.Contains(answer))
+        TextAsset DragAndDrop = null;
+        if (PlayerPrefs.GetString("CURRENT_SUBJECT") == "English")
+        {
+            DragAndDrop = (TextAsset)Resources.Load("ELDragAndDrop");
+        }
+        else if (PlayerPrefs.GetString("CURRENT_SUBJECT") == "Science")
+        {
+            DragAndDrop = (TextAsset)Resources.Load("SLDragAndDrop");
+        }
+        else if (PlayerPrefs.GetString("CURRENT_SUBJECT") == "Math")
+        {
+            DragAndDrop = (TextAsset)Resources.Load("MLDragAndDrop");
+        }
+
+        if (DragAndDrop.text.Contains(answer.Replace("÷", "//")))
         {
             if (soundSource && soundCorrect) soundSource.GetComponent<AudioSource>().PlayOneShot(soundCorrect);
 
@@ -829,13 +842,25 @@ public class Slots : MonoBehaviour, IDropHandler
             PlayerPrefs.SetString("IsDragCorrect", "F");
         }
         String[] answerArray = answer.ToString().Split(new string[] { " --- " }, StringSplitOptions.None);
-        if (answerArray[0].Contains("-"))
+
+        if (answerArray[0].Trim().Contains("_"))
+        {
+            GameObject.Find("DragAndDropObject/ButtonAnswer" + index + "/" + index).GetComponent<Text>().text = answerArray[0].Trim().Replace("_", "").Replace("//", "÷") + answerArray[1].Trim();
+        }
+        else if (answerArray[0].Contains("-"))
         {
             GameObject.Find("DragAndDropObject/ButtonAnswer" + index + "/" + index).GetComponent<Text>().text = answerArray[0].Trim().Replace("-", answerArray[1].Trim());
         }
         else
         {
-            GameObject.Find("DragAndDropObject/ButtonAnswer" + index + "/" + index).GetComponent<Text>().text = answerArray[0].Trim() + " " + answerArray[1].Trim();
+            if (answerArray[0].Trim() == answerArray[1].Trim())
+            {
+                GameObject.Find("DragAndDropObject/ButtonAnswer" + index + "/" + index).GetComponent<Text>().text = answerArray[0].Trim();
+            }
+            else
+            {
+                GameObject.Find("DragAndDropObject/ButtonAnswer" + index + "/" + index).GetComponent<Text>().text = answerArray[0].Trim() + " " + answerArray[1].Trim();
+            }
         }
 
         int getDragAndDropCount = PlayerPrefs.GetInt("DragAndDropCount");

@@ -394,7 +394,7 @@ public class PlayerCanvas : MonoBehaviour
         {
             dbconn.Open(); //Open connection to the database.
             dbcmd = dbconn.CreateCommand();
-            sqlQuery = string.Format("SELECT * FROM sys_leaderboard WHERE subject=\"{0}\" AND level=\"{1}\" ORDER BY stars desc, timespent asc", dropdownSubjectSelected, dropdownLevelSelected);// table name
+            sqlQuery = string.Format("SELECT * FROM sys_leaderboard WHERE subject=\"{0}\" AND level=\"{1}\" ORDER BY stars desc, timespent asc, no_attempts asc", dropdownSubjectSelected, dropdownLevelSelected);// table name
             dbcmd.CommandText = sqlQuery;
             IDataReader reader = dbcmd.ExecuteReader();
             int count = 0;
