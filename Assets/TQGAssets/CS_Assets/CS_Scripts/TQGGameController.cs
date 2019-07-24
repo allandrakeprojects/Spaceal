@@ -190,11 +190,11 @@ namespace TriviaQuizGame
         // This is a special animation-based timer. Instead of filling up a bar it calculates the animation of the timer
         internal Animation timerAnimated;
 
-        [Tooltip("The menu that appears if we lose all lives in a single player game")]
-        public Transform gameOverCanvas;
-
         [Tooltip("The menu that appears after finishing all the questions in the game. Used for single player and hotseat")]
         public Transform victoryCanvas;
+
+        [Tooltip("The menu that appears if we lose all lives in a single player game")]
+        public Transform gameOverCanvas;
 
         [Tooltip("The canvas that holds the larget image when we click on an image question")]
         public Transform largerImageCanvas;
@@ -1903,7 +1903,7 @@ namespace TriviaQuizGame
             {
                 dbconn.Open(); //Open connection to the database.
                 IDbCommand cmd = dbconn.CreateCommand();
-                cmd.CommandText = string.Format("SELECT count(*) FROM sys_leaderboard WHERE name=\"{0}\" AND level=\"{1}\"", name, level);// table name
+                cmd.CommandText = string.Format("SELECT count(*) FROM sys_leaderboard WHERE name=\"{0}\" AND subject=\"{1}\" AND level=\"{2}\"", name, PlayerPrefs.GetString("CURRENT_SUBJECT"), level);// table name
                 var count = (Int64)cmd.ExecuteScalar();
                 if (count > 0)
                 {

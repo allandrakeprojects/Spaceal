@@ -415,7 +415,14 @@ public class PlayerCanvas : MonoBehaviour
                     // First
                     GameObject goHighscore = (GameObject)Instantiate(highscorePrefab);
                     generatedHighscoreObject.Add(goHighscore);
-                    goHighscore.transform.Find("nameText").GetComponent<Text>().text = name;
+                    if (PlayerPrefs.GetString("CURRENT_PLAYER") == name)
+                    {
+                        goHighscore.transform.Find("nameText").GetComponent<Text>().text = "-" + name + "-";
+                    }
+                    else
+                    {
+                        goHighscore.transform.Find("nameText").GetComponent<Text>().text = name;
+                    }
                     goHighscore.transform.Find("subjectText").GetComponent<Text>().text = subject_;
                     goHighscore.transform.Find("levelText").GetComponent<Text>().text = level_;
                     goHighscore.transform.Find("timeSpentText").GetComponent<Text>().text = timespent;
@@ -447,7 +454,14 @@ public class PlayerCanvas : MonoBehaviour
                     GameObject goHighscore = (GameObject)Instantiate(highscorePrefab);
                     generatedHighscoreObject.Add(goHighscore);
                     goHighscore.transform.Find("trophy").GetComponent<Image>().color = new Color32(182, 179, 180, 255);
-                    goHighscore.transform.Find("nameText").GetComponent<Text>().text = name;
+                    if (PlayerPrefs.GetString("CURRENT_PLAYER") == name)
+                    {
+                        goHighscore.transform.Find("nameText").GetComponent<Text>().text = "-" + name + "-";
+                    }
+                    else
+                    {
+                        goHighscore.transform.Find("nameText").GetComponent<Text>().text = name;
+                    }
                     goHighscore.transform.Find("subjectText").GetComponent<Text>().text = subject_;
                     goHighscore.transform.Find("levelText").GetComponent<Text>().text = level_;
                     goHighscore.transform.Find("timeSpentText").GetComponent<Text>().text = timespent;
@@ -479,7 +493,14 @@ public class PlayerCanvas : MonoBehaviour
                     GameObject goHighscore = (GameObject)Instantiate(highscorePrefab);
                     generatedHighscoreObject.Add(goHighscore);
                     goHighscore.transform.Find("trophy").GetComponent<Image>().color = new Color32(184, 121, 100, 255);
-                    goHighscore.transform.Find("nameText").GetComponent<Text>().text = name;
+                    if (PlayerPrefs.GetString("CURRENT_PLAYER") == name)
+                    {
+                        goHighscore.transform.Find("nameText").GetComponent<Text>().text = "-" + name + "-";
+                    }
+                    else
+                    {
+                        goHighscore.transform.Find("nameText").GetComponent<Text>().text = name;
+                    }
                     goHighscore.transform.Find("subjectText").GetComponent<Text>().text = subject_;
                     goHighscore.transform.Find("levelText").GetComponent<Text>().text = level_;
                     goHighscore.transform.Find("timeSpentText").GetComponent<Text>().text = timespent;
@@ -510,7 +531,14 @@ public class PlayerCanvas : MonoBehaviour
                     GameObject goHighscore = (GameObject)Instantiate(highscorePrefab);
                     generatedHighscoreObject.Add(goHighscore);
                     goHighscore.transform.Find("trophy").gameObject.SetActive(false);
-                    goHighscore.transform.Find("nameText").GetComponent<Text>().text = name;
+                    if (PlayerPrefs.GetString("CURRENT_PLAYER") == name)
+                    {
+                        goHighscore.transform.Find("nameText").GetComponent<Text>().text = "-" + name + "-";
+                    }
+                    else
+                    {
+                        goHighscore.transform.Find("nameText").GetComponent<Text>().text = name;
+                    }
                     goHighscore.transform.Find("subjectText").GetComponent<Text>().text = subject_;
                     goHighscore.transform.Find("levelText").GetComponent<Text>().text = level_;
                     goHighscore.transform.Find("timeSpentText").GetComponent<Text>().text = timespent;
