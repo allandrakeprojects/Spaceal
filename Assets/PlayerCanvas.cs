@@ -9,6 +9,7 @@ using System.IO;
 public class PlayerCanvas : MonoBehaviour
 {
     string databaseName = "SpacealDam.s3db";
+
     public Transform Menu;
     public Transform Player;
     public Transform PlayerList;
@@ -40,12 +41,12 @@ public class PlayerCanvas : MonoBehaviour
     //}
 
     private string conn, sqlQuery;
-    private string dropdownSubjectSelected;
-    private string dropdownLevelSelected;
     private IDataReader reader;
     IDbConnection dbconn;
     IDbCommand dbcmd;
-    // Use this for initialization
+    private string dropdownSubjectSelected;
+    private string dropdownLevelSelected;
+
     void Start()
     {
         dropdownSubject.onValueChanged.AddListener(delegate {
@@ -59,19 +60,6 @@ public class PlayerCanvas : MonoBehaviour
         });
 
         dropdownLevelSelected = "Level 1";
-
-        //string filepath = Application.dataPath + "/Plugins/" + databaseName;
-        //conn = "URI=file:" + filepath;
-        //Debug.Log("Stablishing connection to: " + conn);
-
-
-
-
-
-
-
-
-
 
 #if UNITY_EDITOR
         var dbPath = string.Format(@"Assets/StreamingAssets/{0}", databaseName);
@@ -111,217 +99,11 @@ public class PlayerCanvas : MonoBehaviour
             var dbPath = filepath;
 #endif
         //_connection = new SQLiteConnection(dbPath, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create);
-     
 
-        //open db connection
         conn = "URI=file:" + dbPath;
         readers();
-
-
-
-
-
-
-
-        ////Application database Path android
-        //string filepath = Application.persistentDataPath + "/" + databaseName;
-        //print(filepath);
-        //if (File.Exists(filepath))
-        //{
-        //    // If not found on android will create Tables and database
-
-        //    Debug.LogWarning("File \"" + filepath + "\" does not exist. Attempting to create from \"" +
-        //                     Application.dataPath + "!/assets/SpacealDam");
-
-
-
-        //    // UNITY_ANDROID
-        //    WWW loadDB = new WWW("jar:file://" + Application.dataPath + "!/assets/SpacealDam.s3db");
-        //    while (!loadDB.isDone) { }
-        //    // then save to Application.persistentDataPath
-        //    File.WriteAllBytes(filepath, loadDB.bytes);
-
-
-
-        //    print("0 " + filepath);
-        //}
-        //else
-        //{
-        //    print(1);
-        //}
-
-        //conn = "URI=file:" + filepath;
-        //dbconn = new SqliteConnection(conn);
-        //dbconn.Open();
-
-        //string query;
-        //query = "CREATE TABLE sys_students (ID INTEGER PRIMARY KEY   AUTOINCREMENT, name varchar(20))";
-        //try
-        //{
-        //    dbcmd = dbconn.CreateCommand(); // create empty command
-        //    dbcmd.CommandText = query; // fill the command
-        //    reader = dbcmd.ExecuteReader(); // execute command which returns a reader
-        //}
-        //catch (Exception e)
-        //{
-
-        //    Debug.Log(e);
-
-        //}
-
-        //Debug.Log("Stablishing connection to: " + conn);
-
-
-
-        //readers();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
-    //public SqliteConnection con_db;
-    //public SqliteCommand cmd_db;
-    //private SqliteDataReader rdr;
-
-    //private void connDB()
-    //{
-    //    try
-    //    {
-    //        conn = Application.persistentDataPath + "/SpacealDam.db";
-    //        print(conn + " asdasdas");
-    //        if (!File.Exists(conn))
-    //        {
-    //            WWW load = new WWW("jar:file://" + Application.dataPath + "!/assets/SpacealDam.db");
-    //            while (!load.isDone)
-    //            {
-
-    //            }
-    //            File.WriteAllBytes(conn, load.bytes);
-    //        }
-    //        con_db = new SqliteConnection("URI=file:" + conn);
-    //        con_db.Open();
-    //        if (con_db.State == ConnectionState.Open)
-    //        {
-    //            print(conn + " Connected");
-    //        }
-    //        cmd_db = new SqliteCommand("select * from sys_students", con_db);
-    //        rdr = cmd_db.ExecuteReader();
-    //        while (rdr.Read())
-    //        {
-    //            print(rdr[1].ToString());
-    //        }
-    //        rdr.Close();
-    //        rdr = null;
-    //        cmd_db.Dispose();
-    //        cmd_db = null;
-    //        con_db.Close();
-    //        con_db = null;
-    //        //conn = "URI=file:" + path;
-    //        //con_db = new SqliteConnection(conn);
-    //        //con_db.Open();
-    //        //cmd_db = new SqliteCommand("select * from sys_students", con_db);
-    //        //rdr = cmd_db.ExecuteReader();
-    //        //while(rdr.Read())
-    //        //{
-    //        //    print(rdr[1].ToString());
-    //        //}
-
-    //        //print(path);
-    //        //readers();
-    //    }
-    //    catch (Exception err)
-    //    {
-    //        Debug.LogError(err.ToString());
-    //    }
-    //}
-
-    //Ouput the new value of the Dropdown into Text
     void DropdownValueChangedSubject(Dropdown change)
     {
         dropdownSubjectSelected = change.value.ToString();

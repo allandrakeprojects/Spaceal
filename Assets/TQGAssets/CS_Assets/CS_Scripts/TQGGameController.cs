@@ -14,6 +14,7 @@ using System.Data;
 using System.Xml;
 using TriviaQuizGame.Types;
 using System.Collections.Generic;
+using System.IO;
 
 namespace TriviaQuizGame
 {
@@ -22,6 +23,8 @@ namespace TriviaQuizGame
     /// </summary>
     public class TQGGameController : MonoBehaviour
     {
+        string databaseName = "SpacealDam.s3db";
+
         // Holds the current event system
         internal EventSystem eventSystem;
 
@@ -254,7 +257,46 @@ namespace TriviaQuizGame
         /// </summary>
         void Start()
         {
-            conn = "URI=file:" + Application.dataPath + "/Plugins/SpacealDam.s3db"; //Path to database.
+#if UNITY_EDITOR
+            var dbPath = string.Format(@"Assets/StreamingAssets/{0}", databaseName);
+#else
+            // check if file exists in Application.persistentDataPath
+            var filepath = string.Format("{0}/{1}", Application.persistentDataPath, databaseName);
+       
+            if (!File.Exists(filepath))
+            {
+                Debug.Log("Database not in Persistent path");
+                // if it doesn't ->
+                // open StreamingAssets directory and load the db ->
+           
+#if UNITY_ANDROID
+                var loadDb = new WWW("jar:file://" + Application.dataPath + "!/assets/" + databaseName);  // this is the path to your StreamingAssets in android
+                while (!loadDb.isDone) { }  // CAREFUL here, for safety reasons you shouldn't let this while loop unattended, place a timer and error check
+                // then save to Application.persistentDataPath
+                File.WriteAllBytes(filepath, loadDb.bytes);
+#elif UNITY_IOS
+                var loadDb = Application.dataPath + "/Raw/" + databaseName;  // this is the path to your StreamingAssets in iOS
+                // then save to Application.persistentDataPath
+                File.Copy(loadDb, filepath);
+#elif UNITY_WP8
+                var loadDb = Application.dataPath + "/StreamingAssets/" + databaseName;  // this is the path to your StreamingAssets in iOS
+                // then save to Application.persistentDataPath
+                File.Copy(loadDb, filepath);
+           
+#elif UNITY_WINRT
+                var loadDb = Application.dataPath + "/StreamingAssets/" + databaseName;  // this is the path to your StreamingAssets in iOS
+                // then save to Application.persistentDataPath
+                File.Copy(loadDb, filepath);
+#endif
+           
+                Debug.Log("Database written");
+            }
+       
+            var dbPath = filepath;
+#endif
+            //_connection = new SQLiteConnection(dbPath, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create);
+
+            conn = "URI=file:" + dbPath;
 
             // Disable multitouch so that we don't tap two answers at the same time ( prevents multi-answer cheating, thanks to Miguel Paolino for catching this bug )
             Input.multiTouchEnabled = false;
