@@ -14,6 +14,8 @@ using UnityEngine.UI;
 
 public class Slots : MonoBehaviour, IDropHandler
 {
+    string databaseName = "SpacealDam.s3db";
+
     [Header("<Player Options>")]
     [Tooltip("A list of the players in the game. Each player can be assigned a name, a score text, lives and lives bar. You must have at least one player in the list in order to play the game. You don't need to assign all fields. For example, a player may have a name with no lives bar and it will work fine.")]
     public Player[] players;
@@ -137,7 +139,47 @@ public class Slots : MonoBehaviour, IDropHandler
 
     void Start()
     {
-        conn = "URI=file:" + Application.dataPath + "/Plugins/SpacealDam.s3db"; //Path to database.
+
+#if UNITY_EDITOR
+        var dbPath = string.Format(@"Assets/StreamingAssets/{0}", databaseName);
+#else
+            // check if file exists in Application.persistentDataPath
+            var filepath = string.Format("{0}/{1}", Application.persistentDataPath, databaseName);
+       
+            if (!File.Exists(filepath))
+            {
+                Debug.Log("Database not in Persistent path");
+                // if it doesn't ->
+                // open StreamingAssets directory and load the db ->
+           
+#if UNITY_ANDROID
+                var loadDb = new WWW("jar:file://" + Application.dataPath + "!/assets/" + databaseName);  // this is the path to your StreamingAssets in android
+                while (!loadDb.isDone) { }  // CAREFUL here, for safety reasons you shouldn't let this while loop unattended, place a timer and error check
+                // then save to Application.persistentDataPath
+                File.WriteAllBytes(filepath, loadDb.bytes);
+#elif UNITY_IOS
+                var loadDb = Application.dataPath + "/Raw/" + databaseName;  // this is the path to your StreamingAssets in iOS
+                // then save to Application.persistentDataPath
+                File.Copy(loadDb, filepath);
+#elif UNITY_WP8
+                var loadDb = Application.dataPath + "/StreamingAssets/" + databaseName;  // this is the path to your StreamingAssets in iOS
+                // then save to Application.persistentDataPath
+                File.Copy(loadDb, filepath);
+           
+#elif UNITY_WINRT
+                var loadDb = Application.dataPath + "/StreamingAssets/" + databaseName;  // this is the path to your StreamingAssets in iOS
+                // then save to Application.persistentDataPath
+                File.Copy(loadDb, filepath);
+#endif
+           
+                Debug.Log("Database written");
+            }
+       
+            var dbPath = filepath;
+#endif
+        //_connection = new SQLiteConnection(dbPath, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create);
+
+        conn = "URI=file:" + dbPath;
 
         //Assign the sound source for easier access
         if (GameObject.FindGameObjectWithTag(soundSourceTag)) soundSource = GameObject.FindGameObjectWithTag(soundSourceTag);
