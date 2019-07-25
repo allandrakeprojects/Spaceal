@@ -2010,7 +2010,6 @@ namespace TriviaQuizGame
                     noAttempts+=1;
                     break;
                 }
-
                 reader.Close();
                 reader = null;
                 dbcmd.Dispose();
@@ -2080,6 +2079,9 @@ namespace TriviaQuizGame
 
                 currentCategory = null;
             }
+
+            updateLevel();
+
             yield return new WaitForSeconds(delay);
 
             string timespent = GameObject.Find("TimerIcon/Text").GetComponent<Text>().text;
@@ -2247,6 +2249,93 @@ namespace TriviaQuizGame
 
                 //If there is a source and a sound, play it from the source
                 if (soundSource && soundVictory) soundSource.GetComponent<AudioSource>().PlayOneShot(soundVictory);
+            }
+        }
+
+        private void updateLevel()
+        {
+            string levelNew = "";
+            String[] combinationArray = PlayerPrefs.GetString("CURRENT_LEVEL").ToString().Split(new string[] { "," }, StringSplitOptions.None);
+            for (int index = 0; index < combinationArray.Length; index++)
+            {
+                if (index == 0)
+                {
+                    if (PlayerPrefs.GetString("CURRENT_SUBJECT") == "English" && PlayerPrefs.GetString("CURRENT_CATEGORY") == "Level 1 (Placement Test)")
+                    {
+                        levelNew += "1,";
+                    }
+                    else
+                    {
+                        levelNew += combinationArray[index] + ",";
+                    }
+                }
+                else if (index == 1)
+                {
+                    if (PlayerPrefs.GetString("CURRENT_SUBJECT") == "English" && PlayerPrefs.GetString("CURRENT_CATEGORY") == "Level 2 (Vocabulary Words)")
+                    {
+                        levelNew += "1,";
+                    }
+                    else
+                    {
+                        levelNew += combinationArray[index] + ",";
+                    }
+                }
+                else if (index == 2)
+                {
+                    if (PlayerPrefs.GetString("CURRENT_SUBJECT") == "Science" && PlayerPrefs.GetString("CURRENT_CATEGORY") == "Level 1 (Human Body)")
+                    {
+                        levelNew += "1,";
+                    }
+                    else
+                    {
+                        levelNew += combinationArray[index] + ",";
+                    }
+                }
+                else if (index == 3)
+                {
+                    if (PlayerPrefs.GetString("CURRENT_SUBJECT") == "Science" && PlayerPrefs.GetString("CURRENT_CATEGORY") == "Level 2 (Animals)")
+                    {
+                        levelNew += "1,";
+                    }
+                    else
+                    {
+                        levelNew += combinationArray[index] + ",";
+                    }
+                }
+                else if (index == 4)
+                {
+                    if (PlayerPrefs.GetString("CURRENT_SUBJECT") == "Math" && PlayerPrefs.GetString("CURRENT_CATEGORY") == "Level 1 (Place Value)")
+                    {
+                        levelNew += "1,";
+                    }
+                    else
+                    {
+                        levelNew += combinationArray[index] + ",";
+                    }
+                }
+                else if (index == 5)
+                {
+                    if (PlayerPrefs.GetString("CURRENT_SUBJECT") == "Math" && PlayerPrefs.GetString("CURRENT_CATEGORY") == "Level 2 (Computation)")
+                    {
+                        levelNew += "1";
+                    }
+                    else
+                    {
+                        levelNew += combinationArray[index];
+                    }
+                }
+            }
+
+            PlayerPrefs.SetString("CURRENT_LEVEL", levelNew);
+
+            using (dbconn = new SqliteConnection(conn))
+            {
+                dbconn.Open(); //Open connection to the database.
+                dbcmd = dbconn.CreateCommand();
+                sqlQuery = string.Format("UPDATE sys_students set level=\"{0}\" WHERE name=\"{1}\"", levelNew, PlayerPrefs.GetString("CURRENT_PLAYER"));// table name
+                dbcmd.CommandText = sqlQuery;
+                dbcmd.ExecuteScalar();
+                dbconn.Close();
             }
         }
 

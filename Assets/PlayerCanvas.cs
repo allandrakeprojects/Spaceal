@@ -159,6 +159,7 @@ public class PlayerCanvas : MonoBehaviour
                     return false;
                 }
             }
+
             reader.Close();
             reader = null;
             dbcmd.Dispose();
@@ -181,7 +182,7 @@ public class PlayerCanvas : MonoBehaviour
         {
             dbconn.Open(); //Open connection to the database.
             dbcmd = dbconn.CreateCommand();
-            sqlQuery = "SELECT name " + "FROM sys_students";// table name
+            sqlQuery = "SELECT name FROM sys_students";// table name
             dbcmd.CommandText = sqlQuery;
             IDataReader reader = dbcmd.ExecuteReader();
             int i = 0;
@@ -220,6 +221,111 @@ public class PlayerCanvas : MonoBehaviour
         Menu.gameObject.SetActive(true);
         Player.gameObject.SetActive(false);
         PlayerList.gameObject.SetActive(false);
+
+        setLevel(name);
+    }
+
+    private void setLevel(string name)
+    {
+        using (dbconn = new SqliteConnection(conn))
+        {
+            dbconn.Open(); //Open connection to the database.
+            dbcmd = dbconn.CreateCommand();
+            sqlQuery = string.Format("SELECT level FROM sys_students WHERE name=\"{0}\"", name);// table name
+            dbcmd.CommandText = sqlQuery;
+            IDataReader reader = dbcmd.ExecuteReader();
+            string levelGet = "";
+            while (reader.Read())
+            {
+                string level = reader.GetString(0);
+                String[] combinationArray = level.ToString().Split(new string[] { "," }, StringSplitOptions.None);
+                for (int index = 0; index < combinationArray.Length; index++)
+                {
+                    if (index == 0)
+                    {
+                        levelGet += combinationArray[index] + ",";
+                        if (Convert.ToInt32(combinationArray[index]) == 0)
+                        {
+                            PlayerPrefs.DeleteKey("Level 1 (Placement Test)Completed");
+                        }
+                        else
+                        {
+                            PlayerPrefs.SetInt("Level 1 (Placement Test)Completed", 1);
+                        }
+                    }
+                    else if (index == 1)
+                    {
+                        levelGet += combinationArray[index] + ",";
+                        if (Convert.ToInt32(combinationArray[index]) == 0)
+                        {
+                            PlayerPrefs.DeleteKey("Level 2 (Vocabulary Words)Completed");
+                        }
+                        else
+                        {
+                            PlayerPrefs.SetInt("Level 2 (Vocabulary Words)Completed", 1);
+                        }
+                    }
+                    else if (index == 2)
+                    {
+                        levelGet += combinationArray[index] + ",";
+                        if (Convert.ToInt32(combinationArray[index]) == 0)
+                        {
+                            PlayerPrefs.DeleteKey("Level 1 (Human Body)Completed");
+                        }
+                        else
+                        {
+                            PlayerPrefs.SetInt("Level 1 (Human Body)Completed", 1);
+                        }
+                    }
+                    else if (index == 3)
+                    {
+                        levelGet += combinationArray[index] + ",";
+                        if (Convert.ToInt32(combinationArray[index]) == 0)
+                        {
+                            PlayerPrefs.DeleteKey("Level 2 (Animals)Completed");
+                        }
+                        else
+                        {
+                            PlayerPrefs.SetInt("Level 2 (Animals)Completed", 1);
+                        }
+                    }
+                    else if (index == 4)
+                    {
+                        levelGet += combinationArray[index] + ",";
+                        if (Convert.ToInt32(combinationArray[index]) == 0)
+                        {
+                            PlayerPrefs.DeleteKey("Level 1 (Place Value)Completed");
+                        }
+                        else
+                        {
+                            PlayerPrefs.SetInt("Level 1 (Place Value)Completed", 1);
+                        }
+                    }
+                    else if (index == 5)
+                    {
+                        levelGet += combinationArray[index];
+                        if (Convert.ToInt32(combinationArray[index]) == 0)
+                        {
+                            PlayerPrefs.DeleteKey("Level 2 (Computation)Completed");
+                        }
+                        else
+                        {
+                            PlayerPrefs.SetInt("Level 2 (Computation)Completed", 1);
+                        }
+                    }
+                }
+
+                PlayerPrefs.SetString("CURRENT_LEVEL", levelGet);
+
+                break;
+            }
+            reader.Close();
+            reader = null;
+            dbcmd.Dispose();
+            dbcmd = null;
+            dbconn.Close();
+            dbconn = null;
+        }
     }
 
     private void insertStudent(string name)
@@ -233,6 +339,8 @@ public class PlayerCanvas : MonoBehaviour
             dbcmd.ExecuteScalar();
             dbconn.Close();
         }
+
+        setLevel(name);
     }
 
     private void Deletvalue(int id)
@@ -285,6 +393,8 @@ public class PlayerCanvas : MonoBehaviour
                 }
                 else
                 {
+                    setLevel(PlayerPrefs.GetString("CURRENT_PLAYER"));
+
                     Menu.Find("PlayerName").GetComponent<Text>().text = PlayerPrefs.GetString("CURRENT_PLAYER");
                     GOHome();
                 }
