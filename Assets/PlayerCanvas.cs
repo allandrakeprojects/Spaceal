@@ -182,7 +182,7 @@ public class PlayerCanvas : MonoBehaviour
         {
             dbconn.Open(); //Open connection to the database.
             dbcmd = dbconn.CreateCommand();
-            sqlQuery = "SELECT name FROM sys_students";// table name
+            sqlQuery = "SELECT name FROM sys_students ORDER BY name";// table name
             dbcmd.CommandText = sqlQuery;
             IDataReader reader = dbcmd.ExecuteReader();
             int i = 0;
@@ -433,7 +433,7 @@ public class PlayerCanvas : MonoBehaviour
 
         if (username.Length > 0)
         {
-            if (username.Length < 12)
+            if (username.Length <= 12)
             {
                 if (isInsertStudent(username))
                 {
