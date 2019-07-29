@@ -18,8 +18,10 @@ namespace TriviaQuizGame
 		internal RectTransform categoryObject;
 		internal Transform thisTransform;
 		internal GameObject gameController;
+        public Transform options;
+        public Transform timer;
 
-		[Tooltip("The number of the first few categories that will be unlocked by default, regardless of whether we completed them or not")]
+        [Tooltip("The number of the first few categories that will be unlocked by default, regardless of whether we completed them or not")]
 		public int startingCategories = 3;
 
 		[Tooltip("The message that appears when the current category is locked")]
@@ -48,6 +50,9 @@ namespace TriviaQuizGame
 		/// </summary>
 		void Start()
         {
+            options.gameObject.SetActive(false);
+            timer.gameObject.SetActive(false);
+
             thisTransform = transform;
 			
 			// Hold the gamecontroller for easier access

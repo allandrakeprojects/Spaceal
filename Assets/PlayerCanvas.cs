@@ -217,7 +217,7 @@ public class PlayerCanvas : MonoBehaviour
         PlayerInputField.text = "";
         PlayerList.Find("ErrorMessage").GetComponent<Text>().text = "";
         PlayerListInputField.text = "";
-        Menu.Find("PlayerName").GetComponent<Text>().text = name;
+        Menu.Find("SideMenu/PlayerName").GetComponent<Text>().text = name;
         Menu.gameObject.SetActive(true);
         Player.gameObject.SetActive(false);
         PlayerList.gameObject.SetActive(false);
@@ -395,7 +395,7 @@ public class PlayerCanvas : MonoBehaviour
                 {
                     setLevel(PlayerPrefs.GetString("CURRENT_PLAYER"));
 
-                    Menu.Find("PlayerName").GetComponent<Text>().text = PlayerPrefs.GetString("CURRENT_PLAYER");
+                    Menu.Find("SideMenu/PlayerName").GetComponent<Text>().text = PlayerPrefs.GetString("CURRENT_PLAYER");
                     GOHome();
                 }
             }
@@ -433,7 +433,7 @@ public class PlayerCanvas : MonoBehaviour
 
         if (username.Length > 0)
         {
-            if (username.Length <= 12)
+            if (username.Length <= 10)
             {
                 if (isInsertStudent(username))
                 {
@@ -443,7 +443,7 @@ public class PlayerCanvas : MonoBehaviour
                     PlayerInputField.text = "";
                     PlayerList.Find("ErrorMessage").GetComponent<Text>().text = "";
                     PlayerListInputField.text = "";
-                    Menu.Find("PlayerName").GetComponent<Text>().text = username;
+                    Menu.Find("SideMenu/PlayerName").GetComponent<Text>().text = username;
                     Menu.gameObject.SetActive(true);
                     Player.gameObject.SetActive(false);
                     PlayerList.gameObject.SetActive(false);
@@ -543,7 +543,7 @@ public class PlayerCanvas : MonoBehaviour
         {
             dbconn.Open(); //Open connection to the database.
             dbcmd = dbconn.CreateCommand();
-            sqlQuery = string.Format("SELECT * FROM sys_leaderboard WHERE subject=\"{0}\" AND level=\"{1}\" ORDER BY stars desc, timespent asc, no_attempts asc", dropdownSubjectSelected, dropdownLevelSelected);// table name
+            sqlQuery = string.Format("SELECT * FROM sys_leaderboard WHERE subject=\"{0}\" AND level=\"{1}\" ORDER BY stars desc, timespent asc, no_attempts asc, name asc", dropdownSubjectSelected, dropdownLevelSelected);// table name
             dbcmd.CommandText = sqlQuery;
             IDataReader reader = dbcmd.ExecuteReader();
             int count = 0;

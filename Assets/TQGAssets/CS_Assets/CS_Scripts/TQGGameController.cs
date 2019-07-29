@@ -208,6 +208,8 @@ namespace TriviaQuizGame
         [Tooltip("The level of the main menu that can be loaded after the game ends")]
         public string mainMenuLevelName = "CS_StartMenu";
 
+        public Transform options;
+
         [Header("<Animation & Sounds>")]
         [Tooltip("The animation that plays when showing an answer")]
         public AnimationClip animationShow;
@@ -840,6 +842,10 @@ namespace TriviaQuizGame
         {
             PlayerPrefs.DeleteKey("IsDragCorrect");
             PlayerPrefs.SetInt("DragAndDropCount", 0);
+            PlayerPrefs.SetString("ItemBeingDragged", "");
+
+            options.gameObject.SetActive(true);
+            timerIcon.gameObject.SetActive(true);
 
             if (PlayerPrefs.GetInt("DragAndDropCurrentCount") == 11)
             {
@@ -2108,6 +2114,10 @@ namespace TriviaQuizGame
                     // 3 stars
                     stars = 3;
                     remarks = "PERFECT";
+
+                    // Get score
+                    GETSCORE(stars, remarks, timespent);
+
                     victoryCanvas.Find("TextTitle").GetComponent<Text>().text = "PERFECT!";
                     GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
                     yield return new WaitForSeconds(1);
@@ -2122,6 +2132,10 @@ namespace TriviaQuizGame
                     // 2 stars
                     stars = 2;
                     remarks = "PASSED";
+
+                    // Get score
+                    GETSCORE(stars, remarks, timespent);
+
                     GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
                     yield return new WaitForSeconds(1);
                     GameObject.Find("StarsContainer/Star 2/StarCollected").gameObject.SetActive(true);
@@ -2132,12 +2146,13 @@ namespace TriviaQuizGame
                     // 1 stars
                     stars = 1;
                     remarks = "PASSED";
+
+                    // Get score
+                    GETSCORE(stars, remarks, timespent);
+
                     GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
                     yield return new WaitForSeconds(1);
                 }
-
-                // Get score
-                GETSCORE(stars, remarks, timespent);
 
                 // If we have a TextScore and TextHighScore objects, then we are using the single player victory canvas
                 if (victoryCanvas.Find("ScoreTexts/TextScore") && victoryCanvas.Find("ScoreTexts/TextHighScore"))

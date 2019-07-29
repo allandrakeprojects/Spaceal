@@ -226,6 +226,7 @@ public class Slots : MonoBehaviour, IDropHandler
     void AskQuestion()
     {
         currentCategory = PlayerPrefs.GetString("CURRENT_CATEGORY");
+        PlayerPrefs.SetString("ItemBeingDragged", "");
 
         // dev PlayerPrefs.GetInt("DragAndDropLimit")
         if (PlayerPrefs.GetInt("DragAndDropCurrentCount") <= PlayerPrefs.GetInt("DragAndDropLimit"))
@@ -525,6 +526,10 @@ public class Slots : MonoBehaviour, IDropHandler
                 // 3 stars
                 stars = 3;
                 remarks = "PERFECT";
+
+                // Get score
+                GETSCORE(stars, remarks, timespent);
+
                 victoryCanvas.Find("TextTitle").GetComponent<Text>().text = "PERFECT!";
                 GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
                 yield return new WaitForSeconds(1);
@@ -539,6 +544,10 @@ public class Slots : MonoBehaviour, IDropHandler
                 // 2 stars
                 stars = 2;
                 remarks = "PASSED";
+
+                // Get score
+                GETSCORE(stars, remarks, timespent);
+
                 GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
                 yield return new WaitForSeconds(1);
                 GameObject.Find("StarsContainer/Star 2/StarCollected").gameObject.SetActive(true);
@@ -549,12 +558,13 @@ public class Slots : MonoBehaviour, IDropHandler
                 // 1 star
                 stars = 1;
                 remarks = "PASSED";
+
+                // Get score
+                GETSCORE(stars, remarks, timespent);
+
                 GameObject.Find("StarsContainer/Star 1/StarCollected").gameObject.SetActive(true);
                 yield return new WaitForSeconds(1);
             }
-
-            // Get score
-            GETSCORE(stars, remarks, timespent);
 
             // If we have a TextScore and TextHighScore objects, then we are using the single player victory canvas
             if (victoryCanvas.Find("ScoreTexts/TextScore") && victoryCanvas.Find("ScoreTexts/TextHighScore"))
@@ -916,17 +926,23 @@ public class Slots : MonoBehaviour, IDropHandler
     {
         if (!item)
         {
-            // Drag and Drop Correct or Wrong
-            string questionGameObject = PlayerPrefs.GetString("OnBeginDrag");
-            String[] questionGameObjectArray = questionGameObject.ToString().Split(new string[] { " || " }, StringSplitOptions.None);
-            string answer_ = questionGameObjectArray[0];
-            string gameObject_ = questionGameObjectArray[1];
-            string answer = gameObject.GetComponentInChildren<Text>().text + " --- " + answer_;
-            ReadString(answer.Trim(), gameObject.name);
-            //DragHandeler.itemBeingDragged.transform.SetParent(transform);
-            //ExecuteEvents.ExecuteHierarchy<IHasChanged>(gameObject, null, (x, y) => x.HasChanged());
-            GameObject.Find("Answers/" + gameObject_).GetComponent<Image>().enabled = false;
-            GameObject.Find("Answers/" + gameObject_).GetComponentInChildren<Text>().text = "";
+            string itemBeingDragged = PlayerPrefs.GetString("ItemBeingDragged");
+            if (!itemBeingDragged.Contains(gameObject.name))
+            {
+                PlayerPrefs.SetString("ItemBeingDragged", itemBeingDragged += gameObject.name);
+
+                // Drag and Drop Correct or Wrong
+                string questionGameObject = PlayerPrefs.GetString("OnBeginDrag");
+                String[] questionGameObjectArray = questionGameObject.ToString().Split(new string[] { " || " }, StringSplitOptions.None);
+                string answer_ = questionGameObjectArray[0];
+                string gameObject_ = questionGameObjectArray[1];
+                string answer = gameObject.GetComponentInChildren<Text>().text + " --- " + answer_;
+                ReadString(answer.Trim(), gameObject.name);
+                //DragHandeler.itemBeingDragged.transform.SetParent(transform);
+                //ExecuteEvents.ExecuteHierarchy<IHasChanged>(gameObject, null, (x, y) => x.HasChanged());
+                GameObject.Find("Answers/" + gameObject_).GetComponent<Image>().enabled = false;
+                GameObject.Find("Answers/" + gameObject_).GetComponentInChildren<Text>().text = "";
+            }
         }
     }
 

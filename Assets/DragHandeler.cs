@@ -14,7 +14,7 @@ public class DragHandeler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     {
         if (GameObject.Find("Question/Text").GetComponent<Text>().text.Contains("Drag"))
         {
-            PlayerPrefs.SetString("OnBeginDrag", gameObject.GetComponentInChildren<Text>().text +  " || " + gameObject.name);
+            PlayerPrefs.SetString("OnBeginDrag", gameObject.GetComponentInChildren<Text>().text + " || " + gameObject.name);
             PlayerPrefs.Save();
 
             itemBeingDragged = gameObject;
