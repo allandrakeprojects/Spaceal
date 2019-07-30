@@ -51,7 +51,7 @@ namespace TriviaQuizGame
 		void Start()
         {
             options.gameObject.SetActive(false);
-            timer.gameObject.SetActive(false);
+            timer.gameObject.GetComponent<Image>().enabled = false;
 
             thisTransform = transform;
 			

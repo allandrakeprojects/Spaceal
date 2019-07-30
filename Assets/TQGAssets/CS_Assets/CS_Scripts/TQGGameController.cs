@@ -209,6 +209,7 @@ namespace TriviaQuizGame
         public string mainMenuLevelName = "CS_StartMenu";
 
         public Transform options;
+        public Transform timer;
 
         [Header("<Animation & Sounds>")]
         [Tooltip("The animation that plays when showing an answer")]
@@ -323,7 +324,7 @@ namespace TriviaQuizGame
 #else
             highScore = PlayerPrefs.GetFloat(Application.loadedLevelName + "HighScore", 0);
 #endif
-
+                       
             //Assign the timer icon and text for quicker access
             if (GameObject.Find("TimerIcon"))
             {
@@ -449,6 +450,9 @@ namespace TriviaQuizGame
             questionCount = 0;
 
             // Make sure the question limit isn't larger than the actual number of questions available
+
+            options.gameObject.SetActive(true);
+            timer.gameObject.GetComponent<Image>().enabled = true;
 
             // adpd update
             if (currentCategory.ToLower().Contains("level 1"))
@@ -843,9 +847,6 @@ namespace TriviaQuizGame
             PlayerPrefs.DeleteKey("IsDragCorrect");
             PlayerPrefs.SetInt("DragAndDropCount", 0);
             PlayerPrefs.SetString("ItemBeingDragged", "");
-
-            options.gameObject.SetActive(true);
-            timerIcon.gameObject.SetActive(true);
 
             if (PlayerPrefs.GetInt("DragAndDropCurrentCount") == 11)
             {

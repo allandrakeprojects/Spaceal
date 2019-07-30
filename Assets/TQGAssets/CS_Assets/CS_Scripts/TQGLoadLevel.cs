@@ -40,7 +40,6 @@ namespace TriviaQuizGame
 		/// </summary>
 		void Start()
 		{
-
 		    // If there is a gamecontroller in the scene, assign it to the variable
 			if ( GameObject.FindGameObjectWithTag("GameController") )    gameController = GameObject.FindGameObjectWithTag("GameController");
 
