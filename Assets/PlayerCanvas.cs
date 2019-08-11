@@ -356,7 +356,6 @@ public class PlayerCanvas : MonoBehaviour
         }
     }
 
-
     private void Updatevalue(string name, string email, string address, int id)
     {
         using (dbconn = new SqliteConnection(conn))
@@ -370,7 +369,6 @@ public class PlayerCanvas : MonoBehaviour
             dbconn.Close();
         }
     }
-
 
     private void readers()
     {
