@@ -10,6 +10,7 @@ public class PlayerCanvas : MonoBehaviour
 {
     string databaseName = "SpacealDam.s3db";
 
+    public GameObject About;
     public Transform Menu;
     public Transform Player;
     public Transform PlayerList;
@@ -483,6 +484,12 @@ public class PlayerCanvas : MonoBehaviour
         }
     }
 
+    public void GOAbout()
+    {
+        About.SetActive(true);
+        Menu.gameObject.SetActive(false);
+    }
+
     public void GOPlayerList()
     {
         PlayerList.Find("ButtonBack").gameObject.SetActive(true);
@@ -496,6 +503,7 @@ public class PlayerCanvas : MonoBehaviour
     public void GOHome()
     {
         Menu.gameObject.SetActive(true);
+        About.SetActive(false);
         PlayerList.gameObject.SetActive(false);
         Player.gameObject.SetActive(false);
         Leaderboard.gameObject.SetActive(false);
@@ -508,6 +516,7 @@ public class PlayerCanvas : MonoBehaviour
 
         leaderboardGet();
     }
+
     private void leaderboardGet()
     {
         foreach (var obj in generatedHighscoreObject)
